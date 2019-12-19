@@ -64,9 +64,26 @@ public class MenuScreen extends BaseScreen{
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)) {
             speedV.set(speedV.x, -speedV.y);
         }else if (Gdx.input.isKeyPressed(Input.Keys.PLUS)) {
-            speedV.add(0.1f, 0.1f);
+            if (speedV.x > 0 && speedV.y > 0){
+                speedV.add(0.1f, 0.1f);
+            }else if(speedV.x < 0 && speedV.y < 0){
+                speedV.add(-0.1f, 0.1f);
+            }else if(speedV.x > 0 && speedV.y < 0){
+                speedV.add(0.1f, -0.1f);
+            }else if(speedV.x < 0 && speedV.y > 0){
+                speedV.add(-0.1f, 0.1f);
+            }
         }else if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
-            speedV.add(-0.1f, -0.1f);        }
+            if (speedV.x > 0 && speedV.y > 0){
+                speedV.add(-0.1f, -0.1f);
+            }else if(speedV.x < 0 && speedV.y < 0){
+                speedV.add(0.1f, 0.1f);
+            }else if(speedV.x > 0 && speedV.y < 0){
+                speedV.add(-0.1f, 0.1f);
+            }else if(speedV.x < 0 && speedV.y > 0){
+                speedV.add(0.1f, -0.1f);
+            }
+        }
     }
 
     @Override
