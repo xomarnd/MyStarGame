@@ -20,7 +20,8 @@ public class MenuScreen extends BaseScreen{
     private Vector2 touch;
     private Vector2 destination;
     private Texture img;
-
+    private int WIDTH;
+    private int HEIGHT;
     private int logoColor = 0;
     private int[][] arrayColorRegion = {
             {0, 0, 500, 220},
@@ -35,7 +36,8 @@ public class MenuScreen extends BaseScreen{
     public void show() {
         setColor();
         super.show();
-
+        WIDTH = Gdx.graphics.getWidth();
+        HEIGHT = Gdx.graphics.getHeight();
         background = new Texture("textures/bgtexture.jpg");
         img = new Texture("DVDlogo/DVD_VIDEO_logo.png");
         pos = new Vector2();
@@ -54,14 +56,17 @@ public class MenuScreen extends BaseScreen{
     }
     private void keyDownMove() {
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_RIGHT)) {
-            speedV.set(speedV.x, speedV.y);
+            speedV.set(+speedV.x, speedV.y);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_LEFT)) {
             speedV.set(-speedV.x, speedV.y);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_UP)) {
             speedV.set(speedV.x, +speedV.y);
         } else if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)) {
             speedV.set(speedV.x, -speedV.y);
-        }
+        }else if (Gdx.input.isKeyPressed(Input.Keys.PLUS)) {
+            speedV.add(0.1f, 0.1f);
+        }else if (Gdx.input.isKeyPressed(Input.Keys.MINUS)) {
+            speedV.add(-0.1f, -0.1f);        }
     }
 
     @Override
@@ -77,7 +82,6 @@ public class MenuScreen extends BaseScreen{
         pos.add(speedV);
 
 
-
         if ((Math.round(pos.x) == Math.round(touch.x)) && (Math.round(pos.y) == Math.round(touch.y))){
             logoColor = setColor();
             try {
@@ -89,10 +93,10 @@ public class MenuScreen extends BaseScreen{
             }
         }
 
-        if (Math.round(pos.y) == Gdx.graphics.getWidth()-220){
+        if (Math.round(pos.y) == WIDTH -220){
             speedV.set(speedV.x, -speedV.y);
             logoColor = setColor();
-        }else if (Math.round(pos.x) == Gdx.graphics.getHeight()-500){
+        }else if (Math.round(pos.x) == HEIGHT -500){
             speedV.set(-speedV.x, speedV.y);
             logoColor = setColor();
         }else if (Math.round(pos.y) == 0){
