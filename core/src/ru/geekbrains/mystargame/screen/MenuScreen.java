@@ -18,11 +18,14 @@ public class MenuScreen extends BaseScreen{
     private Vector2 pos;
     private Vector2 speedV;
     private Vector2 touch;
-    private Vector2 destination;
+    private Vector2 buffer;
     private Texture img;
     private int WIDTH;
     private int HEIGHT;
     private int logoColor = 0;
+    private static final float V_LEN = 1.5f;
+
+
     private int[][] arrayColorRegion = {
             {0, 0, 500, 220},
             {0, 220, 500, 220},
@@ -43,7 +46,7 @@ public class MenuScreen extends BaseScreen{
         pos = new Vector2();
         speedV = new Vector2(0.9f, 0.9f);
         touch = new Vector2();
-        destination = new Vector2(0,0);
+        buffer = new Vector2();
     }
 
     private int setColor(){
@@ -97,23 +100,26 @@ public class MenuScreen extends BaseScreen{
         batch.draw(img, pos.x, pos.y, arrayColorRegion[logoColor][0], arrayColorRegion[logoColor][1], arrayColorRegion[logoColor][2], arrayColorRegion[logoColor][3]);
         batch.end();
         pos.add(speedV);
+        buffer.set(touch);
 
-
-        if ((Math.round(pos.x) == Math.round(touch.x)) && (Math.round(pos.y) == Math.round(touch.y))){
+        if ((buffer.sub(pos)).len() > V_LEN){
+            pos.add(speedV);
+        }else{
             logoColor = setColor();
             try {
-                speedV.set(0,0);
                 Thread.sleep(1500);
                 speedV.set(0.9f, 0.9f);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            pos.set(touch);
+            pos.add(speedV);
         }
 
-        if (Math.round(pos.y) == WIDTH -220){
+        if (Math.round(pos.y) == WIDTH - 220){
             speedV.set(speedV.x, -speedV.y);
             logoColor = setColor();
-        }else if (Math.round(pos.x) == HEIGHT -500){
+        }else if (Math.round(pos.x) == HEIGHT - 500){
             speedV.set(-speedV.x, speedV.y);
             logoColor = setColor();
         }else if (Math.round(pos.y) == 0){
@@ -135,10 +141,8 @@ public class MenuScreen extends BaseScreen{
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY);
-        destination.set(screenX-pos.x, (Gdx.graphics.getHeight() - screenY-pos.y));
-
-        speedV.set(destination).nor().scl(2f);
+        touch.set(screenX-250, Gdx.graphics.getHeight() - screenY-110);
+        speedV.set(touch.cpy().sub(pos)).setLength(V_LEN);
         pos.add(speedV);
         return super.touchDown(screenX, screenY, pointer, button);
     }
