@@ -116,16 +116,16 @@ public class MenuScreen extends BaseScreen{
             pos.add(speedV);
         }
 
-        if (Math.round(pos.y) == WIDTH - 220){
+        if (Math.round(pos.y) >= WIDTH - 220){
             speedV.set(speedV.x, -speedV.y);
             logoColor = setColor();
-        }else if (Math.round(pos.x) == HEIGHT - 500){
+        }else if (Math.round(pos.x) >= HEIGHT - 500){
             speedV.set(-speedV.x, speedV.y);
             logoColor = setColor();
-        }else if (Math.round(pos.y) == 0){
+        }else if (Math.round(pos.y) <= 0){
             speedV.set(speedV.x, -speedV.y);
             logoColor = setColor();
-        }else if (Math.round(pos.x) == 0){
+        }else if (Math.round(pos.x) <=0){
             speedV.set(-speedV.x, speedV.y);
             logoColor = setColor();
         }
