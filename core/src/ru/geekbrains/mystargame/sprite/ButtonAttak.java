@@ -1,6 +1,5 @@
 package ru.geekbrains.mystargame.sprite;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;

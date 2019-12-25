@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.mystargame.math.Rect;
 
-public class Sprite extends Rect {
+public abstract class Sprite extends Rect {
 
     protected float angle;
     protected float scale = 1f;
@@ -73,4 +73,5 @@ public class Sprite extends Rect {
     public void setScale(float scale) {
         this.scale = scale;
     }
+
 }

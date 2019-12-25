@@ -1,11 +1,9 @@
 package ru.geekbrains.mystargame.sprite;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
-import ru.geekbrains.mystargame.screen.GameScreen;
 
 
 public class ButtonSound extends ScaledButton {

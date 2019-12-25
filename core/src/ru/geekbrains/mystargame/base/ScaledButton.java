@@ -18,11 +18,15 @@ public abstract class ScaledButton extends Sprite {
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (pressed || !isMe(touch)) {
+            scale = 1f;
+            this.pressed = false;
             return false;
+
+        }else {
+            this.pointer = pointer;
+            this.scale = PRESS_SCALE;
+            this.pressed = true;
         }
-        this.pointer = pointer;
-        this.scale = PRESS_SCALE;
-        this.pressed = true;
         return false;
     }
 
