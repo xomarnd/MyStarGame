@@ -19,8 +19,7 @@ public class Rnd {
     }
 
     public static int nextInt(int max) {
-        int kek = random.nextInt(max);
-        System.out.println(kek);
-        return kek;
+        int randomAtlas = random.nextInt(max);
+        return randomAtlas;
     }
 }

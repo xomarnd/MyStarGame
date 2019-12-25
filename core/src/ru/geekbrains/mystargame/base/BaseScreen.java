@@ -8,12 +8,14 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.geekbrains.mystargame.StarGame;
 import ru.geekbrains.mystargame.math.MatrixUtils;
 import ru.geekbrains.mystargame.math.Rect;
 
 public class BaseScreen implements Screen, InputProcessor {
 
     protected SpriteBatch batch;
+    protected StarGame game;
 
     private Rect screenBounds;
     private Rect worldBounds;
@@ -150,5 +152,9 @@ public class BaseScreen implements Screen, InputProcessor {
     public boolean scrolled(int amount) {
         System.out.println("scrolled amount = " + amount);
         return false;
+    }
+
+    public StarGame getGame() {
+        return game;
     }
 }

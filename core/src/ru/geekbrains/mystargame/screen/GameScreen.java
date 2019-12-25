@@ -2,34 +2,41 @@ package ru.geekbrains.mystargame.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-//import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-//import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.mystargame.base.BaseScreen;
 import ru.geekbrains.mystargame.math.Rect;
-import ru.geekbrains.mystargame.sprite.Background;
+import ru.geekbrains.mystargame.sprite.ButtonAttak;
+import ru.geekbrains.mystargame.sprite.ButtonDodge;
+import ru.geekbrains.mystargame.sprite.ButtonSound;
+import ru.geekbrains.mystargame.sprite.IndicatorStamina;
 import ru.geekbrains.mystargame.sprite.Star;
 
 public class GameScreen extends BaseScreen {
+    public enum State {PLAYING, PAUSE, GAME_OVER}
 
-//    private Texture bg;
-    private TextureAtlas atlas;
     private TextureAtlas atlasStar;
     private TextureAtlas atlasMenu;
 
+    private State state;
 
-    private Background background;
+
+    private ButtonDodge buttonDodge;
+    private ButtonAttak buttonAttak;
+    private ButtonSound buttonSound;
+    private IndicatorStamina indicatorStamina;
     private Star[] stars;
 
     @Override
     public void show() {
         super.show();
-//        bg = new Texture("textures/bg.png");
-//        background = new Background(new TextureRegion(bg));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
         atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack"));
+        buttonDodge = new ButtonDodge(atlasMenu);
+        buttonAttak = new ButtonAttak(atlasMenu);
+        indicatorStamina = new IndicatorStamina(atlasMenu);
+        buttonSound = new ButtonSound(atlasMenu);
 
         stars = new Star[64];
         for (int i = 0; i < stars.length; i++) {
@@ -47,7 +54,10 @@ public class GameScreen extends BaseScreen {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-//        background.resize(worldBounds);
+        indicatorStamina.resize(worldBounds);
+        buttonSound.resize(worldBounds);
+        buttonDodge.resize(worldBounds);
+        buttonAttak.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
         }
@@ -55,19 +65,24 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void dispose() {
-        atlas.dispose();
-//        bg.dispose();
+        atlasMenu.dispose();
         super.dispose();
     }
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        return super.touchDown(touch, pointer, button);
+        buttonSound.touchDown(touch, pointer, button);
+        buttonDodge.touchDown(touch, pointer, button);
+        buttonAttak.touchDown(touch, pointer, button);
+        return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
-        return super.touchUp(touch, pointer, button);
+        buttonSound.touchDown(touch, pointer, button);
+        buttonDodge.touchDown(touch, pointer, button);
+        buttonAttak.touchDown(touch, pointer, button);
+        return false;
     }
 
     private void update(float delta) {
@@ -81,10 +96,17 @@ public class GameScreen extends BaseScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
-//        background.draw(batch);
         for (Star star : stars) {
             star.draw(batch);
         }
+        indicatorStamina.draw(batch);
+        buttonSound.draw(batch);
+        buttonDodge.draw(batch);
+        buttonAttak.draw(batch);
         batch.end();
     }
+    public State getState() {
+        return state;
+    }
+
 }

@@ -16,13 +16,10 @@ public class ButtonPlay extends ScaledButton {
         this.game = game;
     }
 
-
-
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-        setHeightProportion(0.19f);
-//        setLeft(worldBounds.getLeft() + 0.05f);
+        setHeightProportion(0.11f);
         setBottom(worldBounds.getBottom() + 0.05f);
     }
 

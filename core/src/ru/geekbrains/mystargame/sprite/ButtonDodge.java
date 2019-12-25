@@ -6,22 +6,21 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
 
-public class ButtonExit extends ScaledButton {
+public class ButtonDodge  extends ScaledButton {
 
-    public ButtonExit(TextureAtlas atlas) {
-        super(atlas.findRegion("exitbutton"));
+    public ButtonDodge(TextureAtlas atlas) {
+        super(atlas.findRegion("dougbutton"));
     }
 
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-        setHeightProportion(0.09f);
+        setHeightProportion(0.12f);
         setLeft(worldBounds.getLeft() + 0.05f);
-        setTop(worldBounds.getTop() - 0.05f);
+        setBottom(worldBounds.getBottom() + 0.05f);
     }
 
     @Override
     public void action() {
-        Gdx.app.exit();
     }
 }
