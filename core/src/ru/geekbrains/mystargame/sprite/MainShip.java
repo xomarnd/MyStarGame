@@ -2,7 +2,6 @@ package ru.geekbrains.mystargame.sprite;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.mystargame.base.Ship;
 import ru.geekbrains.mystargame.math.Rect;
@@ -18,8 +17,7 @@ public class MainShip extends Ship {
     private int rightPointer = INVALID_POINTER;
 
     public MainShip(TextureAtlas atlas) {
-        super(atlas.findRegion("main_ship"));
-        bulletRegion = atlas.findRegion("bulletMainShip");
+        super(atlas.findRegion("main_ship"), 1, 2, 3);
         v0.set(0.5f, 0);
 
 
@@ -28,7 +26,7 @@ public class MainShip extends Ship {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-        setHeightProportion(0.029f);
+        setHeightProportion(0.089f);
         setBottom(worldBounds.getBottom() + 0.25f);
     }
 

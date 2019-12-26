@@ -16,8 +16,8 @@ public abstract class Ship extends Sprite {
 
 
 
-    public Ship(TextureRegion region) {
-        super(region);
+    public Ship(TextureRegion region, int rows, int cols, int frames) {
+        super(region, rows, cols, frames);
     }
 
     @Override
