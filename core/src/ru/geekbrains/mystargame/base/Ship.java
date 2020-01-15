@@ -9,8 +9,8 @@ import ru.geekbrains.mystargame.sprite.Bullet;
 
 public class Ship extends Sprite {
 
-    protected Vector2 v;
-    protected Vector2 v0;
+    protected Vector2 v0 = new Vector2();
+    protected Vector2 v = new Vector2();
 
     protected BulletPool bulletPool;
     //принимаем границы игрового мира
@@ -28,7 +28,7 @@ public class Ship extends Sprite {
     protected float bulletHeight;
     protected int damage;
 
-    protected Vector2 bulletV;
+    protected Vector2 bulletV = new Vector2();
 
     protected int hp;
 
@@ -40,10 +40,26 @@ public class Ship extends Sprite {
         super(region, rows, cols, frames);
     }
 
+    public void damage(int damage) {
+        //уменьшаем значение здоровья корабля на размер нанесенного ущерба
+        hp -= damage;
+        System.out.println("Ship hp" + hp);
+        if (hp <= 0) {
+            //вызываем метод уничтожения корабля
+            destroy();
+        }
+        frame = 1;
+    }
+
     @Override
     public void update(float delta) {
         pos.mulAdd(v, delta);
     }
+    @Override
+    public void destroy() {
+        super.destroy();
+    }
+
 
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();

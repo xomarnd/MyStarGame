@@ -4,11 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Родительский класс пулов/объектов/спрайтов снарядов/кораблей/взрывов.
- * @param <T>
- */
 
+//Родительский класс пулов/объектов/спрайтов снарядов/кораблей/взрывов
 public abstract class SpritesPool<T extends Sprite> {
 
     private final List<T> activeObjects = new ArrayList<>();

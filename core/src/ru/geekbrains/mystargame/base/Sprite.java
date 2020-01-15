@@ -58,12 +58,15 @@ public abstract class Sprite extends Rect {
     public void destroy() {
         this.destroyed = true;
     }
+
     public boolean isDestroyed() {
         return destroyed;
     }
+
     public void flushDestroy() {
         this.destroyed = false;
     }
+
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         return false;
     }

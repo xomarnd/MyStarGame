@@ -138,7 +138,13 @@ public class MainShip extends Ship {
                 break;
         }
     }
-
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                        || bullet.getLeft() > getRight()
+                        || bullet.getTop() < getBottom()
+        );
+    }
 
     private void moveRight() {
         v.set(v0);

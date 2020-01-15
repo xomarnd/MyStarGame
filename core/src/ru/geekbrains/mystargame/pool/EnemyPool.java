@@ -4,9 +4,9 @@ import com.badlogic.gdx.audio.Sound;
 
 import ru.geekbrains.mystargame.base.SpritesPool;
 import ru.geekbrains.mystargame.math.Rect;
-import ru.geekbrains.mystargame.sprite.EnemyShip;
+import ru.geekbrains.mystargame.sprite.Enemy;
 
-public class EnemyPool extends SpritesPool<EnemyShip> {
+public class EnemyPool extends SpritesPool<Enemy> {
 
     private BulletPool bulletPool;
     private Sound sound;
@@ -19,7 +19,7 @@ public class EnemyPool extends SpritesPool<EnemyShip> {
     }
 
     @Override
-    public EnemyShip newObject() {
-        return new EnemyShip(bulletPool, sound, worldBounds);
+    public Enemy newObject() {
+        return new Enemy(bulletPool, worldBounds);
     }
 }

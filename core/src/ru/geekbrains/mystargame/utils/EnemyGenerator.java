@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.math.Rnd;
 import ru.geekbrains.mystargame.pool.EnemyPool;
-import ru.geekbrains.mystargame.sprite.EnemyShip;
+import ru.geekbrains.mystargame.sprite.Enemy;
 
 public class EnemyGenerator {
 
@@ -63,10 +63,10 @@ public class EnemyGenerator {
         generateTimer += delta;
         if (generateTimer > generateInterval) {
             generateTimer = 0f;
-            EnemyShip enemyShip = enemyPool.obtain();
+            Enemy enemy = enemyPool.obtain();
             float type = (float) Math.random();
             if (type < 0.5f) {
-                enemyShip.set(
+                enemy.set(
                         enemySmallRegions,
                         enemySmallV,
                         bulletRegion,
@@ -74,11 +74,11 @@ public class EnemyGenerator {
                         ENEMY_SMALL_BULLET_VY,
                         ENEMY_SMALL_DAMAGE,
                         ENEMY_SMALL_RELOAD_INTERVAL,
-                        ENEMY_SMALL_HP,
-                        ENEMY_SMALL_HEIGHT
+                        ENEMY_SMALL_HEIGHT,
+                        ENEMY_SMALL_HP
                 );
             } else if (type < 0.8f) {
-                enemyShip.set(
+                enemy.set(
                         enemyMediumRegions,
                         enemyMediumV,
                         bulletRegion,
@@ -86,11 +86,12 @@ public class EnemyGenerator {
                         ENEMY_MEDIUM_BULLET_VY,
                         ENEMY_MEDIUM_DAMAGE,
                         ENEMY_MEDIUM_RELOAD_INTERVAL,
-                        ENEMY_MEDIUM_HP,
-                        ENEMY_MEDIUM_HEIGHT
+                        ENEMY_MEDIUM_HEIGHT,
+                        ENEMY_MEDIUM_HP
+
                 );
             } else {
-                enemyShip.set(
+                enemy.set(
                         enemyBigRegions,
                         enemyBigV,
                         bulletRegion,
@@ -98,15 +99,16 @@ public class EnemyGenerator {
                         ENEMY_BIG_BULLET_VY,
                         ENEMY_BIG_DAMAGE,
                         ENEMY_BIG_RELOAD_INTERVAL,
-                        ENEMY_BIG_HP,
-                        ENEMY_BIG_HEIGHT
+                        ENEMY_BIG_HEIGHT,
+                        ENEMY_BIG_HP
+
                 );
             }
-            enemyShip.pos.x = Rnd.nextFloat(
-                    worldBounds.getLeft() + enemyShip.getHalfWidth(),
-                    worldBounds.getRight() - enemyShip.getHalfWidth()
+            enemy.pos.x = Rnd.nextFloat(
+                    worldBounds.getLeft() + enemy.getHalfWidth(),
+                    worldBounds.getRight() - enemy.getHalfWidth()
             );
-            enemyShip.setBottom(worldBounds.getTop());
+            enemy.setBottom(worldBounds.getTop());
         }
     }
 }
