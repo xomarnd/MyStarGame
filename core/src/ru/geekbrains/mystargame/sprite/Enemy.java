@@ -1,11 +1,14 @@
 package ru.geekbrains.mystargame.sprite;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.mystargame.base.Ship;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.pool.BulletPool;
+import ru.geekbrains.mystargame.pool.ExplosionPool;
+
 
 public class Enemy extends Ship {
     //инициируем перечисление состояний корабля противника
@@ -18,10 +21,14 @@ public class Enemy extends Ship {
     //инициируем ветор скорости выплывание корабля противника из-за экрана
     private Vector2 descentV = new Vector2(0, -0.15f);
 
-    public Enemy(BulletPool bulletPool, Rect worldBounds) {
+    public Enemy(BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound, Rect worldBounds) {
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
+        this.shootSound = shootSound;
         this.worldBounds = worldBounds;
-        this.v.set(v0);
+        this.v = new Vector2();
+        this.v0 = new Vector2();
+        this.bulletV = new Vector2();
     }
 
     @Override
@@ -29,26 +36,19 @@ public class Enemy extends Ship {
         super.update(delta);
         //проверяем на какой стадии сейчас корабль
         switch (state) {
-            //если еще выплывает из-за экрана
             case DESCENT:
-                //сбрасываем таймер перезагрузки снарядов, чтобы не начал стрелять пока не выплывет
-                reloadTimer = 0f;
-                //если корабль уже полностью выплыл на экран игрового поля
                 if (getTop() <= worldBounds.getTop()) {
-                    //устанавливаем ему начальную скорость в активном режиме
                     v.set(v0);
-                    //переключаем состояние корабля противника в режим боя
                     state = State.FIGHT;
-                    //устанавливаем таймер перезагрузки равным интервалу перезвгрузки снарядов,
-                    //чтобы выстрелить как только выплывет на экран
-                    reloadTimer = reloadInterval;
                 }
                 break;
-            //если уже в активном режиме
             case FIGHT:
-                //если низ корабля противника коснулся нижней границы мира
+                reloadTimer += delta;
+                if (reloadTimer > reloadInterval) {
+                    reloadTimer = 0f;
+                    shoot();
+                }
                 if (getBottom() < worldBounds.getBottom()) {
-                    //взрываем корабль противника(вот такая странная игровая логика)
                     destroy();
                 }
                 break;

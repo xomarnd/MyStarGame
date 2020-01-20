@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.pool.BulletPool;
 import ru.geekbrains.mystargame.sprite.Bullet;
+import ru.geekbrains.mystargame.sprite.Explosion;
+import ru.geekbrains.mystargame.pool.ExplosionPool;
+
 
 public class Ship extends Sprite {
 
@@ -17,6 +20,7 @@ public class Ship extends Sprite {
     protected Rect worldBounds;
     //объявляем переменную региона
     protected TextureRegion bulletRegion;
+    protected ExplosionPool explosionPool;
 
     //Объявляем переменные атаки корабля игрока
     protected Sound shootSound;
@@ -24,6 +28,10 @@ public class Ship extends Sprite {
     protected float reloadInterval = 0.2f;
     //инициируем переменную таймера времени между выстрелами
     protected float reloadTimer = 0f;
+
+    protected float damageAnimateInterval = 0.1f;
+    protected float damageAnimateTimer = damageAnimateInterval;
+
 
     protected float bulletHeight;
     protected int damage;
@@ -47,23 +55,38 @@ public class Ship extends Sprite {
         if (hp <= 0) {
             //вызываем метод уничтожения корабля
             destroy();
+            hp = 0;
         }
         frame = 1;
+        damageAnimateTimer = 0f;
+    }
+
+    public int getDamage() {
+        return damage;
     }
 
     @Override
     public void update(float delta) {
         pos.mulAdd(v, delta);
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= damageAnimateInterval) {
+            frame = 0;
+        }
     }
     @Override
     public void destroy() {
         super.destroy();
+        boom();
     }
-
 
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletV, bulletHeight, worldBounds, damage);
         shootSound.play();
+    }
+
+    protected void boom() {
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(getHeight(), this.pos);
     }
 }
