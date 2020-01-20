@@ -24,15 +24,11 @@ import ru.geekbrains.mystargame.sprite.Star;
 import ru.geekbrains.mystargame.utils.EnemyGenerator;
 import ru.geekbrains.mystargame.sprite.Enemy;
 import ru.geekbrains.mystargame.sprite.Bullet;
-import ru.geekbrains.mystargame.pool.ExplosionPool;
 
 
 
 
 public class GameScreen extends BaseScreen {
-
-    private enum State {PAYING, GAME_OVER}
-
     private TextureAtlas atlas;
     private TextureAtlas atlasStar;
     private TextureAtlas atlasMenu;
@@ -41,8 +37,6 @@ public class GameScreen extends BaseScreen {
 
     private BulletPool bulletPool;
     private EnemyPool enemyPool;
-    private ExplosionPool explosionPool;
-
 
     private EnemyGenerator enemyGenerator;
 
@@ -53,8 +47,6 @@ public class GameScreen extends BaseScreen {
     private Sound bulletSound;
     //объявляем объект звука попадания снаряда в корабль
     private Sound shellHitSound;
-    private Sound explosionSound;
-
 
     //Объявление кнопок интерфейса
     private ButtonDodge buttonDodge;
@@ -62,8 +54,6 @@ public class GameScreen extends BaseScreen {
     private ButtonSound buttonSound;
     private IndicatorStamina indicatorStamina;
     private Star[] stars;
-
-    private State state;
 
     @Override
     public void show() {
@@ -76,7 +66,6 @@ public class GameScreen extends BaseScreen {
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         shellHitSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shell-hit.mp3"));
-        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
 
         atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
@@ -84,22 +73,20 @@ public class GameScreen extends BaseScreen {
 
         buttonDodge = new ButtonDodge(atlasMenu);
         buttonAttak = new ButtonAttak(atlasMenu);
+
         indicatorStamina = new IndicatorStamina(atlasMenu);
         buttonSound = new ButtonSound(atlasMenu);
 
-        //инициируем обьекты коробля
+        //инициируем обьект коробля
         bulletPool = new BulletPool();
-        explosionPool = new ExplosionPool(atlas, explosionSound);
-        mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
-        enemyPool = new EnemyPool(bulletPool, explosionPool, bulletSound, worldBounds);
+        mainShip = new MainShip(atlas, bulletPool, laserSound);
+        enemyPool = new EnemyPool(bulletPool, bulletSound, worldBounds);
         enemyGenerator = new EnemyGenerator(atlas, enemyPool, worldBounds);
 
         stars = new Star[64];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlasStar);
         }
-        state = State.PAYING;
-
 
     }
 
@@ -138,8 +125,6 @@ public class GameScreen extends BaseScreen {
         laserSound.dispose();
         bulletSound.dispose();
         shellHitSound.dispose();
-        explosionSound.dispose();
-
         super.dispose();
     }
     private void freeAllDestroyed() {
@@ -196,16 +181,14 @@ public class GameScreen extends BaseScreen {
         return false;
     }
     private void update(float delta) {
+        mainShip.update(delta);
+
+        bulletPool.updateActiveSprites(delta);
+        enemyPool.updateActiveSprites(delta);
+        enemyGenerator.generate(delta);
+        buttonDodge.update(delta);
         for (Star star : stars) {
             star.update(delta);
-        }
-        explosionPool.updateActiveSprites(delta);
-        if (state == State.PAYING) {
-            mainShip.update(delta);
-            bulletPool.updateActiveSprites(delta);
-            enemyPool.updateActiveSprites(delta);
-            enemyGenerator.generate(delta);
-            buttonDodge.update(delta);
         }
     }
 
@@ -218,57 +201,63 @@ public class GameScreen extends BaseScreen {
         for (Star star : stars) {
             star.draw(batch);
         }
-        explosionPool.drawActiveSprites(batch);
-        if (state == State.PAYING) {
-            mainShip.draw(batch);
-            bulletPool.drawActiveSprites(batch);
-            enemyPool.drawActiveSprites(batch);
-            indicatorStamina.draw(batch);
-            buttonSound.draw(batch);
-            buttonDodge.draw(batch);
-            buttonAttak.draw(batch);
-        }
+        mainShip.draw(batch);
+        bulletPool.drawActiveSprites(batch);
+        enemyPool.drawActiveSprites(batch);
+        indicatorStamina.draw(batch);
+        buttonSound.draw(batch);
+        buttonDodge.draw(batch);
+        buttonAttak.draw(batch);
         batch.end();
-
     }
 
     //Метод проверки столкновений объектов(снарядов, кораблей и т.п.)
     private void checkCollisions() {
-        if (state != State.PAYING) {
-            return;
-        }
         //инициируем временные коллекции для пулов кораблей противника и снарядов
         List<Enemy> enemyList = enemyPool.getActiveObjects();
+
         List<Bullet> bulletList = bulletPool.getActiveObjects();
+        //листаем коллекцию кораблей противника - отрабатываем их столкновения
         for (Enemy enemy : enemyList) {
+            //инициируем временную переменную для рассчета минимального расстояния между объектами
+            //это нужно, чтобы соприкосновения происходили реалистично близко к центрам объектов
             float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
+            //если длина вектора между векторами позиции корабля противника и главного корабля
+            // стал меньше минимального расстояния
             if (mainShip.pos.dst(enemy.pos) < minDist) {
                 //вызываем метод уничтожения корабля противника(такая игровая логика)
                 enemy.destroy();
-                mainShip.damage(enemy.getDamage());
             }
             //листаем коллекцию снарядов (главного корабля) - отрабатываем их столкновения
             for (Bullet bullet : bulletList) {
-                if (bullet.isDestroyed()) {
+                //если пуля не принадлежит главному кораблю, значит это пуля корабля противника
+                if (bullet.getOwner() != mainShip) {
+                    //пропускаем остальной код на этой итерации - идем к следующей
                     continue;
                 }
-                if (bullet.getOwner() != mainShip) {
-                    if (mainShip.isBulletCollision(bullet)) {
-                        mainShip.damage(bullet.getDamage());
-                        bullet.destroy();
-                    }
-                } else {
-                    for (Enemy enemyShip : enemyList) {
-                        if (enemyShip.isBulletCollision(bullet)) {
-                            enemyShip.damage(bullet.getDamage());
-                            bullet.destroy();
-                        }
-                    }
+                //если снаряд главного корабля попал в корабль противника
+                if (enemy.isBulletCollision(bullet)) {
+                    //вызываем метод расчета повреждения корабля противника
+                    enemy.damage(bullet.getDamage());
+                    //вызываем метод уничтожения снаряда
+                    bullet.destroy();
                 }
             }
-            if (mainShip.isDestroyed()) {
-                state = State.GAME_OVER;
+        }
+        //листаем коллекцию снарядов (кораблей противника) - отрабатываем их столкновения
+        for (Bullet bullet : bulletList) {
+            //если пуля принадлежит главному кораблю, значит это не пуля корабля противника
+            if (bullet.getOwner() == mainShip) {
+                //пропускаем остальной код на этой итерации - идем к следующей
+                continue;
+            }
+            //если снаряд корабля противника попал в главный корабль
+            if (mainShip.isBulletCollision(bullet)) {
+                //вызываем метод расчета повреждения главного корабля
+                //вызываем метод уничтожения снаряда
+                bullet.destroy();
             }
         }
     }
+
 }
