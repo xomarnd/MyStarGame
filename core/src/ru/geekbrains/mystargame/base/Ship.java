@@ -24,6 +24,7 @@ public class Ship extends Sprite {
 
     //Объявляем переменные атаки корабля игрока
     protected Sound shootSound;
+    protected Sound sound;
     //инициируем константу времени между выстрелами
     protected float reloadInterval = 0.2f;
     //инициируем переменную таймера времени между выстрелами
@@ -39,6 +40,11 @@ public class Ship extends Sprite {
     protected Vector2 bulletV = new Vector2();
 
     protected int hp;
+    protected int CONSTHP;
+    protected int CONSTDAMAGE;
+    protected boolean destroyed;
+
+
 
     public Ship() {
         super();
@@ -60,7 +66,9 @@ public class Ship extends Sprite {
         frame = 1;
         damageAnimateTimer = 0f;
     }
-
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
     public int getDamage() {
         return damage;
     }

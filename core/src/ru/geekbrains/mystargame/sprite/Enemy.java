@@ -86,6 +86,7 @@ public class Enemy extends Ship {
                 bullet.getRight() < getLeft()
                         || bullet.getLeft() > getRight()
                         || bullet.getBottom() > getTop()
+                        || bullet.getTop() < pos.y
         );
     }
 }

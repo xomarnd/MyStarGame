@@ -15,6 +15,8 @@ import ru.geekbrains.mystargame.pool.ExplosionPool;
 public class MainShip extends Ship {
     private boolean pressedLeft;
     private boolean pressedRight;
+    private static final int HP = 2;//30
+    private static final int DAMAGE = 1;
 
     private static final int INVALID_POINTER = -1;
     private int leftPointer = INVALID_POINTER;
@@ -24,16 +26,18 @@ public class MainShip extends Ship {
         super(atlas.findRegion("main_ship"), 1, 2, 2);
         this.bulletPool = bulletPool;
         this.shootSound = shootSound;
+
         this.explosionPool = explosionPool;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
         this.bulletHeight = 0.01f;
         this.bulletV = new Vector2(0, 0.5f);
-        this.damage = 1;
+        this.damage = DAMAGE;
+
         this.v = new Vector2();
         this.v0 = new Vector2(0.5f, 0);
         this.reloadInterval = 0.25f;
         this.reloadTimer = 0f;
-        this.hp = 100;
+        this.hp = HP;
     }
 
     @Override
@@ -62,7 +66,6 @@ public class MainShip extends Ship {
         }
     }
 
-    @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (touch.x < worldBounds.pos.x) {
             if (leftPointer != INVALID_POINTER) {
@@ -80,7 +83,6 @@ public class MainShip extends Ship {
         return false;
     }
 
-    @Override
     public boolean touchUp(Vector2 touch, int pointer, int button) {
         if (pointer == leftPointer) {
             leftPointer = INVALID_POINTER;
@@ -147,6 +149,9 @@ public class MainShip extends Ship {
                 || bullet.getTop() < getBottom()
         );
     }
+    public void dispose() {
+        sound.dispose();
+    }
 
     private void moveRight() {
         v.set(v0);
@@ -158,6 +163,25 @@ public class MainShip extends Ship {
 
     private void stop() {
         v.setZero();
+    }
+
+    public void startNewGame(Rect worldBounds) {
+        //сбрасываем переменые состояния клавиш
+        pressedLeft = false;
+        pressedRight = false;
+        //сбрасываем переменые состояния касания и кликов мыши
+        leftPointer = INVALID_POINTER;
+        rightPointer = INVALID_POINTER;
+        //останавливаем движение главного корабля
+        stop();
+        hp = HP;
+        CONSTHP = HP;
+        damage = DAMAGE;
+        CONSTDAMAGE = DAMAGE;
+        //устанавливаем дефолтную позицию корабля
+        pos.x = worldBounds.pos.x;
+        //сбрасываем флаг видимости главного корабля
+        destroyed = false;
     }
 
 }

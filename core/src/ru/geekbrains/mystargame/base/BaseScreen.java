@@ -28,15 +28,27 @@ public class BaseScreen implements Screen, InputProcessor {
 
     @Override
     public void show() {
-        System.out.println("show");
-        batch = new SpriteBatch();
-        screenBounds = new Rect();
-        worldBounds = new Rect();
-        glBounds = new Rect(0, 0, 1f, 1f);
-        worldToGl = new Matrix4();
-        screenToWorld = new Matrix3();
-        touch = new Vector2();
         Gdx.input.setInputProcessor(this);
+        this.batch = new SpriteBatch();
+//
+//        System.out.println("show");
+//        batch = new SpriteBatch();
+//        screenBounds = new Rect();
+//        worldBounds = new Rect();
+//        glBounds = new Rect(0, 0, 1f, 1f);
+//        worldToGl = new Matrix4();
+//        screenToWorld = new Matrix3();
+//        touch = new Vector2();
+//        Gdx.input.setInputProcessor(this);
+    }
+    public BaseScreen(StarGame game) {
+        this.game = game;
+        this.screenBounds = new Rect();
+        this.worldBounds = new Rect();
+        this.glBounds = new Rect(0, 0, 1f, 1f);
+        this.worldToGl = new Matrix4();
+        this.screenToWorld = new Matrix3();
+        this.touch = new Vector2();
     }
 
     @Override
@@ -61,7 +73,6 @@ public class BaseScreen implements Screen, InputProcessor {
     }
 
     public void resize(Rect worldBounds) {
-        System.out.println("resize worldBounds width = " + worldBounds.getWidth() + " height = " + worldBounds.getHeight());
     }
 
     @Override
@@ -156,5 +167,9 @@ public class BaseScreen implements Screen, InputProcessor {
 
     public StarGame getGame() {
         return game;
+    }
+
+    public void startNewGame() {
+
     }
 }

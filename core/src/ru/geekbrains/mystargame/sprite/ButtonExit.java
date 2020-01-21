@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
-
+import ru.geekbrains.mystargame.base.BaseScreen;
 public class ButtonExit extends ScaledButton {
 
-    public ButtonExit(TextureAtlas atlas) {
-        super(atlas.findRegion("exitbutton"));
+    public ButtonExit(TextureAtlas atlas, BaseScreen screen) {
+        super(atlas.findRegion("exitbutton"), screen);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 
+import ru.geekbrains.mystargame.StarGame;
 import ru.geekbrains.mystargame.base.BaseScreen;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.sprite.ButtonExit;
@@ -15,8 +16,6 @@ import ru.geekbrains.mystargame.sprite.Star;
 public class MenuScreen extends BaseScreen {
 
     public static boolean downBtn = false;
-    private Game game;
-
     private TextureAtlas atlas;
     private TextureAtlas atlasMenu;
     private TextureAtlas atlasStar;
@@ -26,8 +25,8 @@ public class MenuScreen extends BaseScreen {
     private ButtonPlay buttonPlay;
     private Star[] stars;
 
-    public MenuScreen(Game game) {
-        this.game = game;
+    public MenuScreen(StarGame game) {
+        super(game);
     }
 
     @Override
@@ -37,8 +36,8 @@ public class MenuScreen extends BaseScreen {
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
         atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack"));
 
-        buttonExit = new ButtonExit(atlasMenu);
-        buttonPlay = new ButtonPlay(atlasMenu, game);
+        buttonExit = new ButtonExit(atlasMenu, this);
+        buttonPlay = new ButtonPlay(atlasMenu, this);
         stars = new Star[256];
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlasStar);

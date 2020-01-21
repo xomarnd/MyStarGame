@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
+import ru.geekbrains.mystargame.base.BaseScreen;
 
 public class IndicatorStamina  extends ScaledButton {
 
-    public IndicatorStamina(TextureAtlas atlas) {
-        super(atlas.findRegion("amo3"));
+    public IndicatorStamina(TextureAtlas atlas, BaseScreen screen) {
+        super(atlas.findRegion("amo3"), screen);
     }
 
     @Override
@@ -21,6 +22,5 @@ public class IndicatorStamina  extends ScaledButton {
 
     @Override
     public void action() {
-        Gdx.app.exit();
     }
 }

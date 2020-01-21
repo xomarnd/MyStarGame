@@ -4,11 +4,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
+import ru.geekbrains.mystargame.base.BaseScreen;
+
 
 public class ButtonAttak extends ScaledButton {
 
-    public ButtonAttak(TextureAtlas atlas) {
-        super(atlas.findRegion("attakbutton"));
+    public ButtonAttak(TextureAtlas atlas, BaseScreen screen) {
+        super(atlas.findRegion("attakbutton"), screen);
     }
 
     @Override

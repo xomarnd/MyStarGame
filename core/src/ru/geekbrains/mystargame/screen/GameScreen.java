@@ -11,12 +11,15 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
 
+import ru.geekbrains.mystargame.StarGame;
 import ru.geekbrains.mystargame.base.BaseScreen;
+import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.pool.BulletPool;
 import ru.geekbrains.mystargame.pool.EnemyPool;
 import ru.geekbrains.mystargame.sprite.ButtonAttak;
 import ru.geekbrains.mystargame.sprite.ButtonDodge;
+import ru.geekbrains.mystargame.sprite.ButtonPlay;
 import ru.geekbrains.mystargame.sprite.ButtonSound;
 import ru.geekbrains.mystargame.sprite.IndicatorStamina;
 import ru.geekbrains.mystargame.sprite.MainShip;
@@ -25,13 +28,15 @@ import ru.geekbrains.mystargame.utils.EnemyGenerator;
 import ru.geekbrains.mystargame.sprite.Enemy;
 import ru.geekbrains.mystargame.sprite.Bullet;
 import ru.geekbrains.mystargame.pool.ExplosionPool;
+import ru.geekbrains.mystargame.sprite.GameOver;
+import ru.geekbrains.mystargame.sprite.ButtonNewGame;
 
 
 
 
 public class GameScreen extends BaseScreen {
 
-    private enum State {PAYING, GAME_OVER}
+    private enum State {PLAYING, GAME_OVER}
 
     private TextureAtlas atlas;
     private TextureAtlas atlasStar;
@@ -61,9 +66,20 @@ public class GameScreen extends BaseScreen {
     private ButtonAttak buttonAttak;
     private ButtonSound buttonSound;
     private IndicatorStamina indicatorStamina;
+    //объявляем спрайт для сообщения "конец игры"
+    private GameOver gameOver;
+    //объявляем регион для картинки "новая игра"
+    private ButtonNewGame newGameButton;
+
+
     private Star[] stars;
 
     private State state;
+    private State preState;
+
+    public GameScreen(StarGame game) {
+        super(game);
+    }
 
     @Override
     public void show() {
@@ -82,10 +98,15 @@ public class GameScreen extends BaseScreen {
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
         atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack"));
 
-        buttonDodge = new ButtonDodge(atlasMenu);
-        buttonAttak = new ButtonAttak(atlasMenu);
-        indicatorStamina = new IndicatorStamina(atlasMenu);
-        buttonSound = new ButtonSound(atlasMenu);
+        buttonDodge = new ButtonDodge(atlasMenu, this);
+        buttonAttak = new ButtonAttak(atlasMenu, this);
+        indicatorStamina = new IndicatorStamina(atlasMenu, this);
+        buttonSound = new ButtonSound(atlasMenu, this);
+
+        //инициируем "конец игры"
+        gameOver = new GameOver(atlas);
+        //инициируем "новая игра"
+        newGameButton = new ButtonNewGame(atlasMenu, this);
 
         //инициируем обьекты коробля
         bulletPool = new BulletPool();
@@ -98,7 +119,8 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlasStar);
         }
-        state = State.PAYING;
+        state = State.PLAYING;
+        preState = State.PLAYING;
 
 
     }
@@ -118,6 +140,8 @@ public class GameScreen extends BaseScreen {
         buttonSound.resize(worldBounds);
         buttonDodge.resize(worldBounds);
         buttonAttak.resize(worldBounds);
+        gameOver.resize(worldBounds);
+        newGameButton.resize(worldBounds);
         super.resize(worldBounds);
 
 
@@ -131,6 +155,7 @@ public class GameScreen extends BaseScreen {
      */
     @Override
     public void dispose() {
+        mainShip.dispose();
         atlas.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
@@ -139,7 +164,6 @@ public class GameScreen extends BaseScreen {
         bulletSound.dispose();
         shellHitSound.dispose();
         explosionSound.dispose();
-
         super.dispose();
     }
     private void freeAllDestroyed() {
@@ -164,6 +188,11 @@ public class GameScreen extends BaseScreen {
         }else {
             buttonAttak.touchDown(touch, pointer, button);
         }
+        if (state == State.PLAYING) {
+            mainShip.touchDown(touch, pointer, button);
+        } else if (state == State.GAME_OVER) {
+            newGameButton.touchDown(touch, pointer, button);
+        }
 //        buttonSound.touchDown(touch, pointer, button);
         return false;
     }
@@ -181,6 +210,11 @@ public class GameScreen extends BaseScreen {
         }else {
             buttonAttak.touchDown(touch, pointer, button);
         }
+        if (state == State.PLAYING) {
+            mainShip.touchUp(touch, pointer, button);
+        } else if (state == State.GAME_OVER) {
+            newGameButton.touchUp(touch, pointer, button);
+        }
 //        buttonSound.touchDown(touch, pointer, button);
         return false;
     }
@@ -195,12 +229,24 @@ public class GameScreen extends BaseScreen {
         mainShip.keyUp(keycode);
         return false;
     }
+    public void startNewGame() {
+        //устанавливаем текущий режим игры в положение "играть"
+        gameOver.startNewGame();
+        //задаем начальные параметры главному кораблю
+        mainShip.startNewGame(worldBounds);
+        bulletPool.freeAllActiveObjects();
+        enemyPool.freeAllActiveObjects();
+        explosionPool.freeAllActiveObjects();
+        state = State.PLAYING;
+
+    }
+
     private void update(float delta) {
         for (Star star : stars) {
             star.update(delta);
         }
         explosionPool.updateActiveSprites(delta);
-        if (state == State.PAYING) {
+        if (state == State.PLAYING) {
             mainShip.update(delta);
             bulletPool.updateActiveSprites(delta);
             enemyPool.updateActiveSprites(delta);
@@ -219,34 +265,41 @@ public class GameScreen extends BaseScreen {
             star.draw(batch);
         }
         explosionPool.drawActiveSprites(batch);
-        if (state == State.PAYING) {
-            mainShip.draw(batch);
+
+        if (state == State.PLAYING) {
+            explosionPool.drawActiveSprites(batch);
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
+
+            mainShip.draw(batch);
+
             indicatorStamina.draw(batch);
             buttonSound.draw(batch);
             buttonDodge.draw(batch);
             buttonAttak.draw(batch);
+        } else if (state == State.GAME_OVER) {
+            gameOver.draw(batch);
+            newGameButton.draw(batch);
         }
         batch.end();
-
     }
 
-    //Метод проверки столкновений объектов
+
     private void checkCollisions() {
-        if (state != State.PAYING) {
+        if (state != State.PLAYING) {
             return;
         }
-        //инициируем временные коллекции для пулов кораблей противника и снарядов
         List<Enemy> enemyList = enemyPool.getActiveObjects();
         List<Bullet> bulletList = bulletPool.getActiveObjects();
-
-        //листаем коллекцию кораблей противника - отрабатываем их столкновения
         for (Enemy enemy : enemyList) {
             float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
             if (mainShip.pos.dst(enemy.pos) < minDist) {
-                enemy.destroy();
                 mainShip.damage(enemy.getDamage());
+                enemy.destroy();
+                if (mainShip.isDestroyed()) {
+                    mainShip.setHp(0);
+                    state = State.GAME_OVER;
+                }
             }
             for (Bullet bullet : bulletList) {
                 if (bullet.getOwner() != mainShip) {
@@ -263,26 +316,12 @@ public class GameScreen extends BaseScreen {
                 continue;
             }
             if (mainShip.isBulletCollision(bullet)) {
+                mainShip.damage(bullet.getDamage());
                 bullet.destroy();
-                if (bullet.isDestroyed()) {
-                    continue;
+                if (mainShip.isDestroyed()) {
+                    mainShip.setHp(0);
+                    state = State.GAME_OVER;
                 }
-                if (bullet.getOwner() != mainShip) {
-                    if (mainShip.isBulletCollision(bullet)) {
-                        mainShip.damage(bullet.getDamage());
-                        bullet.destroy();
-                    }
-                } else {
-                    for (Enemy enemyShip : enemyList) {
-                        if (enemyShip.isBulletCollision(bullet)) {
-                            enemyShip.damage(bullet.getDamage());
-                            bullet.destroy();
-                        }
-                    }
-                }
-            }
-            if (mainShip.isDestroyed()) {
-                state = State.GAME_OVER;
             }
         }
     }

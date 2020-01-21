@@ -8,7 +8,7 @@ import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.utils.Regions;
 
 public abstract class Sprite extends Rect {
-    private boolean destroyed;
+    protected boolean destroyed;
     protected float angle;
     protected float scale = 1f;
     protected TextureRegion[] regions;
@@ -75,13 +75,10 @@ public abstract class Sprite extends Rect {
         return false;
     }
 
-    public boolean touchDragged(int screenX, int screenY, int pointer) {
-        return false;
-    }
-
     public float getAngle() {
         return angle;
     }
+
 
     public void setAngle(float angle) {
         this.angle = angle;
@@ -93,6 +90,14 @@ public abstract class Sprite extends Rect {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public void setFrame(int frame) {
+        this.frame = frame;
+    }
+
+    public int getFrame() {
+        return frame;
     }
 
 }

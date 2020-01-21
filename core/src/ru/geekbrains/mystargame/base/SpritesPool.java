@@ -8,7 +8,7 @@ import java.util.List;
 //Родительский класс пулов/объектов/спрайтов снарядов/кораблей/взрывов
 public abstract class SpritesPool<T extends Sprite> {
 
-    private final List<T> activeObjects = new ArrayList<>();
+    protected final List<T> activeObjects = new ArrayList<>();
 
     private final List<T> freeObjects = new ArrayList<>();
 
@@ -22,7 +22,6 @@ public abstract class SpritesPool<T extends Sprite> {
             object = freeObjects.remove(freeObjects.size() - 1);
         }
         activeObjects.add(object);
-        System.out.println(this.getClass().getName() + " active/free:" + activeObjects.size() + "/" + freeObjects.size());
         return object;
     }
 
@@ -46,11 +45,16 @@ public abstract class SpritesPool<T extends Sprite> {
         for (int i = 0; i < activeObjects.size(); i++) {
             T item = activeObjects.get(i);
             if (item.isDestroyed()) {
-                free(item);
+                activeObjects.remove(item);
+                freeObjects.add(item);
                 i--;
                 item.flushDestroy();
             }
         }
+    }
+    public void freeAllActiveObjects() {
+        freeObjects.addAll(activeObjects);
+        activeObjects.clear();
     }
 
     public List<T> getActiveObjects() {

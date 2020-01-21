@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import ru.geekbrains.mystargame.base.BaseScreen;
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
-import ru.geekbrains.mystargame.screen.GameScreen;
 
-public class ButtonPlay extends ScaledButton {
+public class ButtonNewGame extends ScaledButton {
 
-    public ButtonPlay(TextureAtlas atlas, BaseScreen screen) {
+    //передаем объект скрина(экрана)
+    private BaseScreen screen;
+
+    public ButtonNewGame(TextureAtlas atlas, BaseScreen screen) {
+        //передаем в родительский класс текструру-регион картинки кнопки "NewGame"
         super(atlas.findRegion("startgame"), screen);
         this.screen = screen;
     }
@@ -21,8 +24,12 @@ public class ButtonPlay extends ScaledButton {
         setBottom(worldBounds.getBottom() + 0.05f);
     }
 
+
     @Override
     public void action() {
-        game.setScreen(new GameScreen(game));
+        setShowing(false);
+        screen.startNewGame();
+
     }
+
 }

@@ -4,11 +4,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
 import ru.geekbrains.mystargame.base.ScaledButton;
 import ru.geekbrains.mystargame.math.Rect;
+import ru.geekbrains.mystargame.base.BaseScreen;
 
 
 public class ButtonSound extends ScaledButton {
-    public ButtonSound(TextureAtlas atlas) {
-        super(atlas.findRegion("soundon"));
+    public ButtonSound(TextureAtlas atlas, BaseScreen screen) {
+        super(atlas.findRegion("soundon"), screen);
 //        super(new TextureRegion(new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack")).findRegion("soundon")));
     }
 
