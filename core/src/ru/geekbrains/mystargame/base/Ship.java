@@ -1,6 +1,7 @@
 package ru.geekbrains.mystargame.base;
 
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.mystargame.math.Rect;
@@ -21,7 +22,7 @@ public class Ship extends Sprite {
     //объявляем переменную региона
     protected TextureRegion bulletRegion;
     protected ExplosionPool explosionPool;
-
+    protected TextureRegion bulletBigRegion;
     //Объявляем переменные атаки корабля игрока
     protected Sound shootSound;
     protected Sound sound;
@@ -36,6 +37,7 @@ public class Ship extends Sprite {
 
     protected float bulletHeight;
     protected int damage;
+    protected int superdamage;
 
     protected Vector2 bulletV = new Vector2();
 
@@ -43,7 +45,6 @@ public class Ship extends Sprite {
     protected int CONSTHP;
     protected int CONSTDAMAGE;
     protected boolean destroyed;
-
 
 
     public Ship() {
@@ -63,7 +64,7 @@ public class Ship extends Sprite {
             destroy();
             hp = 0;
         }
-        frame = 1;
+        frame = 0;
         damageAnimateTimer = 0f;
     }
     public void setHp(int hp) {
@@ -78,7 +79,7 @@ public class Ship extends Sprite {
         pos.mulAdd(v, delta);
         damageAnimateTimer += delta;
         if (damageAnimateTimer >= damageAnimateInterval) {
-            frame = 0;
+            frame = rndFrame(1, 3);
         }
     }
     @Override
@@ -86,10 +87,21 @@ public class Ship extends Sprite {
         super.destroy();
         boom();
     }
+    public int rndFrame(int min, int max)
+    {
+        max -= min;
+        return (int) (Math.random() * ++max) + min;
+    }
 
     protected void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, bulletRegion, pos, bulletV, bulletHeight, worldBounds, damage);
+        shootSound.play();
+    }
+
+    protected void bigShoot(){
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(this, bulletBigRegion, pos, bulletV, bulletHeight, worldBounds, superdamage);
         shootSound.play();
     }
 

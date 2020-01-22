@@ -172,4 +172,8 @@ public class BaseScreen implements Screen, InputProcessor {
     public void startNewGame() {
 
     }
+
+    public void dodge() {
+
+    }
 }

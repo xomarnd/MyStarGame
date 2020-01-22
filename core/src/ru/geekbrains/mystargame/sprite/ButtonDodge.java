@@ -11,8 +11,7 @@ public class ButtonDodge  extends ScaledButton {
     private static final float INITIAL_HEIGHT = 0.12f;
 
     public ButtonDodge(TextureAtlas atlas, BaseScreen screen) {
-        super(atlas.findRegion("dougbutton"), screen);
-
+        super(atlas.findRegion("dougbutton"), 1, 2, 2, screen);
     }
 
     @Override
@@ -25,5 +24,7 @@ public class ButtonDodge  extends ScaledButton {
 
     @Override
     public void action() {
+        System.out.println("buttonDodge");
+        MainShip.buttonDodge();
     }
 }

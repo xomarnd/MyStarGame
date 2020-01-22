@@ -34,7 +34,7 @@ public class MenuScreen extends BaseScreen {
         super.show();
         atlas = new TextureAtlas(Gdx.files.internal("textures/menuAtlas.tpack"));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
-        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack"));
+        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu2.tpack"));
 
         buttonExit = new ButtonExit(atlasMenu, this);
         buttonPlay = new ButtonPlay(atlasMenu, this);

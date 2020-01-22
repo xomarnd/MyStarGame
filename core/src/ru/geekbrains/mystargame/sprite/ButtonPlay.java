@@ -10,7 +10,7 @@ import ru.geekbrains.mystargame.screen.GameScreen;
 public class ButtonPlay extends ScaledButton {
 
     public ButtonPlay(TextureAtlas atlas, BaseScreen screen) {
-        super(atlas.findRegion("startgame"), screen);
+        super(atlas.findRegion("startgame"), 2, 1, 2, screen);
         this.screen = screen;
     }
 

@@ -9,7 +9,7 @@ import ru.geekbrains.mystargame.base.BaseScreen;
 public class ButtonExit extends ScaledButton {
 
     public ButtonExit(TextureAtlas atlas, BaseScreen screen) {
-        super(atlas.findRegion("exitbutton"), screen);
+        super(atlas.findRegion("exitbutton"), 1, 2, 2, screen);
     }
 
     @Override

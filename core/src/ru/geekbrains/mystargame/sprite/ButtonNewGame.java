@@ -13,7 +13,7 @@ public class ButtonNewGame extends ScaledButton {
 
     public ButtonNewGame(TextureAtlas atlas, BaseScreen screen) {
         //передаем в родительский класс текструру-регион картинки кнопки "NewGame"
-        super(atlas.findRegion("startgame"), screen);
+        super(atlas.findRegion("newgame"), 2, 1, 2, screen);
         this.screen = screen;
     }
 
@@ -29,7 +29,6 @@ public class ButtonNewGame extends ScaledButton {
     public void action() {
         setShowing(false);
         screen.startNewGame();
-
     }
 
 }

@@ -49,11 +49,11 @@ public class EnemyGenerator {
 
     public EnemyGenerator(TextureAtlas atlas, EnemyPool enemyPool, Rect worldBounds) {
         TextureRegion enemy0 = atlas.findRegion("enemy0");
-        this.enemySmallRegions = Regions.split(enemy0, 1, 2, 2);
+        this.enemySmallRegions = Regions.split(enemy0, 1, 4, 4);
         TextureRegion enemy1 = atlas.findRegion("enemy1");
-        this.enemyMediumRegions = Regions.split(enemy1, 1, 2, 2);
+        this.enemyMediumRegions = Regions.split(enemy1, 1, 4, 4);
         TextureRegion enemy2 = atlas.findRegion("enemy2");
-        this.enemyBigRegions = Regions.split(enemy2, 1, 2, 2);
+        this.enemyBigRegions = Regions.split(enemy2, 1, 4, 4);
         this.bulletRegion = atlas.findRegion("bulletEnemy");
         this.enemyPool = enemyPool;
         this.worldBounds = worldBounds;

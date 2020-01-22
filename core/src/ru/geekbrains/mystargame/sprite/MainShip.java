@@ -1,6 +1,5 @@
 package ru.geekbrains.mystargame.sprite;
 
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -13,25 +12,27 @@ import ru.geekbrains.mystargame.pool.ExplosionPool;
  * Класс спрайта корабля игрока(главного корабля).
  */
 public class MainShip extends Ship {
-    private boolean pressedLeft;
-    private boolean pressedRight;
-    private static final int HP = 2;//30
+    private static final int HP = 30;//30
     private static final int DAMAGE = 1;
+    private static final int SUPERDAMAGE = 10;
 
-    private static final int INVALID_POINTER = -1;
-    private int leftPointer = INVALID_POINTER;
-    private int rightPointer = INVALID_POINTER;
-
+    private static boolean moves = false;
+    public static boolean vectorDodge = false;
+    public static boolean pointStaminaFull = true;
+    public static boolean setAttack;
     public MainShip(TextureAtlas atlas, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound) {
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
+        super(atlas.findRegion("main_ship"), 1, 4, 4);
         this.bulletPool = bulletPool;
         this.shootSound = shootSound;
 
+
         this.explosionPool = explosionPool;
         this.bulletRegion = atlas.findRegion("bulletMainShip");
+        this.bulletBigRegion = atlas.findRegion("bulletEnemy");
         this.bulletHeight = 0.01f;
         this.bulletV = new Vector2(0, 0.5f);
         this.damage = DAMAGE;
+        this.superdamage = SUPERDAMAGE;
 
         this.v = new Vector2();
         this.v0 = new Vector2(0.5f, 0);
@@ -40,11 +41,25 @@ public class MainShip extends Ship {
         this.hp = HP;
     }
 
+    public static void buttonDodge() {
+        moves = true;
+        if (vectorDodge){
+            vectorDodge = false;
+        }else {
+            vectorDodge = true;
+        }
+    }
+
+    public static void buttonAttack() {
+        setAttack = true;
+    }
+
+
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
         this.worldBounds = worldBounds;
-        setHeightProportion(0.089f);
+        setHeightProportion(0.15f);
         setBottom(worldBounds.getBottom() + 0.25f);
     }
 
@@ -52,10 +67,25 @@ public class MainShip extends Ship {
     public void update(float delta) {
         super.update(delta);
         reloadTimer += delta;
+        if (moves) {
+            if (vectorDodge) {
+                v.set(v0);
+            } else {
+                v.set(v0).rotate(180);
+            }
+        }
+        //автоатака
         if (reloadTimer > reloadInterval) {
             reloadTimer = 0f;
             shoot();
         }
+        //супер атака
+        if (pointStaminaFull && setAttack){
+            bigShoot();
+            pointStaminaFull = false;
+            setAttack = false;
+        }
+        //ограничения движения коробля
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
             stop();
@@ -66,81 +96,6 @@ public class MainShip extends Ship {
         }
     }
 
-    public boolean touchDown(Vector2 touch, int pointer, int button) {
-        if (touch.x < worldBounds.pos.x) {
-            if (leftPointer != INVALID_POINTER) {
-                return false;
-            }
-            leftPointer = pointer;
-            moveLeft();
-        } else {
-            if (rightPointer != INVALID_POINTER) {
-                return false;
-            }
-            rightPointer = pointer;
-            moveRight();
-        }
-        return false;
-    }
-
-    public boolean touchUp(Vector2 touch, int pointer, int button) {
-        if (pointer == leftPointer) {
-            leftPointer = INVALID_POINTER;
-            if (rightPointer != INVALID_POINTER) {
-                moveRight();
-            } else {
-                stop();
-            }
-        } else if (pointer == rightPointer) {
-            rightPointer = INVALID_POINTER;
-            if (leftPointer != INVALID_POINTER) {
-                moveLeft();
-            } else {
-                stop();
-            }
-        }
-        return false;
-    }
-
-    public void keyDown(int keycode) {
-        switch (keycode) {
-            case Input.Keys.D:
-            case Input.Keys.RIGHT:
-                moveRight();
-                pressedRight = true;
-                break;
-            case Input.Keys.A:
-            case Input.Keys.LEFT:
-                moveLeft();
-                pressedLeft = true;
-                break;
-            case Input.Keys.UP:
-                break;
-        }
-    }
-
-    public void keyUp(int keycode) {
-        switch (keycode) {
-            case Input.Keys.D:
-            case Input.Keys.RIGHT:
-                pressedRight = false;
-                if (pressedLeft) {
-                    moveLeft();
-                } else {
-                    stop();
-                }
-                break;
-            case Input.Keys.A:
-            case Input.Keys.LEFT:
-                pressedLeft = false;
-                if (pressedRight) {
-                    moveRight();
-                } else {
-                    stop();
-                }
-                break;
-        }
-    }
     public boolean isBulletCollision(Rect bullet) {
         return !(
                 bullet.getRight() < getLeft()
@@ -153,25 +108,11 @@ public class MainShip extends Ship {
         sound.dispose();
     }
 
-    private void moveRight() {
-        v.set(v0);
-    }
-
-    private void moveLeft() {
-        v.set(v0).rotate(180);
-    }
-
     private void stop() {
         v.setZero();
     }
 
     public void startNewGame(Rect worldBounds) {
-        //сбрасываем переменые состояния клавиш
-        pressedLeft = false;
-        pressedRight = false;
-        //сбрасываем переменые состояния касания и кликов мыши
-        leftPointer = INVALID_POINTER;
-        rightPointer = INVALID_POINTER;
         //останавливаем движение главного корабля
         stop();
         hp = HP;

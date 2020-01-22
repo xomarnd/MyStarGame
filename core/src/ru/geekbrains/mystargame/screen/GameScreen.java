@@ -2,6 +2,7 @@ package ru.geekbrains.mystargame.screen;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
@@ -36,7 +37,7 @@ import ru.geekbrains.mystargame.sprite.ButtonNewGame;
 
 public class GameScreen extends BaseScreen {
 
-    private enum State {PLAYING, GAME_OVER}
+    private enum State {PLAYING, PAUSE, GAME_OVER}
 
     private TextureAtlas atlas;
     private TextureAtlas atlasStar;
@@ -50,7 +51,6 @@ public class GameScreen extends BaseScreen {
 
 
     private EnemyGenerator enemyGenerator;
-
 
     //Объявление переменных звука
     private Music music;
@@ -96,7 +96,7 @@ public class GameScreen extends BaseScreen {
 
         atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
-        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu.tpack"));
+        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu2.tpack"));
 
         buttonDodge = new ButtonDodge(atlasMenu, this);
         buttonAttak = new ButtonAttak(atlasMenu, this);
@@ -104,16 +104,16 @@ public class GameScreen extends BaseScreen {
         buttonSound = new ButtonSound(atlasMenu, this);
 
         //инициируем "конец игры"
-        gameOver = new GameOver(atlas);
+        gameOver = new GameOver(atlasMenu);
         //инициируем "новая игра"
         newGameButton = new ButtonNewGame(atlasMenu, this);
 
         //инициируем обьекты коробля
         bulletPool = new BulletPool();
         explosionPool = new ExplosionPool(atlas, explosionSound);
-        mainShip = new MainShip(atlas, bulletPool, explosionPool, laserSound);
+        mainShip = new MainShip(atlasMenu, bulletPool, explosionPool, laserSound);
         enemyPool = new EnemyPool(bulletPool, explosionPool, bulletSound, worldBounds);
-        enemyGenerator = new EnemyGenerator(atlas, enemyPool, worldBounds);
+        enemyGenerator = new EnemyGenerator(atlasMenu, enemyPool, worldBounds);
 
         stars = new Star[64];
         for (int i = 0; i < stars.length; i++) {
@@ -136,13 +136,14 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void resize(Rect worldBounds) {
+
         indicatorStamina.resize(worldBounds);
         buttonSound.resize(worldBounds);
         buttonDodge.resize(worldBounds);
         buttonAttak.resize(worldBounds);
         gameOver.resize(worldBounds);
-        newGameButton.resize(worldBounds);
         super.resize(worldBounds);
+        newGameButton.resize(worldBounds);
 
 
         mainShip.resize(worldBounds);
@@ -181,12 +182,14 @@ public class GameScreen extends BaseScreen {
             mainShip.touchDown(touch, pointer, button);
         }else {
             buttonDodge.touchDown(touch, pointer, button);
-        }
+            buttonDodge.action();
 
+        }
         if(!buttonAttak.isMe(touch)){
             mainShip.touchDown(touch, pointer, button);
         }else {
             buttonAttak.touchDown(touch, pointer, button);
+            buttonAttak.action();
         }
         if (state == State.PLAYING) {
             mainShip.touchDown(touch, pointer, button);
@@ -203,11 +206,13 @@ public class GameScreen extends BaseScreen {
         if(!buttonDodge.isMe(touch)){
             mainShip.touchDown(touch, pointer, button);
         }else {
+            IndicatorStamina.setAddPointCount(1);
             buttonDodge.touchDown(touch, pointer, button);
         }
         if(!buttonAttak.isMe(touch)){
             mainShip.touchDown(touch, pointer, button);
         }else {
+            IndicatorStamina.setPointCount();
             buttonAttak.touchDown(touch, pointer, button);
         }
         if (state == State.PLAYING) {
@@ -220,13 +225,39 @@ public class GameScreen extends BaseScreen {
     }
     @Override
     public boolean keyDown(int keycode) {
-        mainShip.keyDown(keycode);
+        if (keycode == Input.Keys.ESCAPE) {
+            //если установлено состояние пауза игры
+            if (state == State.PAUSE) {
+                //восстанавливаем игру после паузы
+                resume();
+                //если игра не в режиме паузы
+            } else {
+                //ставим игру на паузу
+                pause();
+            }
+        }
+        if (keycode == Input.Keys.SPACE) {
+            //если установлено состояние пауза игры
+            if (state == State.PLAYING) {
+                //перемещение корабля
+                IndicatorStamina.setAddPointCount(1);
+                buttonDodge.action();
+            }
+        }
+        if (keycode == Input.Keys.ENTER) {
+            //если установлено состояние пауза игры
+            if (state == State.PLAYING) {
+                //суператака
+                IndicatorStamina.setPointCount();
+                buttonAttak.action();
+
+            }
+        }
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        mainShip.keyUp(keycode);
         return false;
     }
     public void startNewGame() {
@@ -238,7 +269,23 @@ public class GameScreen extends BaseScreen {
         enemyPool.freeAllActiveObjects();
         explosionPool.freeAllActiveObjects();
         state = State.PLAYING;
+    }
 
+    @Override
+    public void pause() {
+        //запоминаем текущий уровень игры
+        preState = state;
+        //устанавливаем текущему уровню игры режим "пауза"
+        state = State.PAUSE;
+        //преостанавливаем воспроизведение музыки
+        music.pause();
+    }
+    @Override
+    public void resume() {
+        //устанавливаем текущий режим игру на сохраненный предыдущий
+        state = preState;
+        //воспроизводим музыку с того места, где она была преостановлена
+        music.play();
     }
 
     private void update(float delta) {
@@ -252,6 +299,13 @@ public class GameScreen extends BaseScreen {
             enemyPool.updateActiveSprites(delta);
             enemyGenerator.generate(delta);
             buttonDodge.update(delta);
+            buttonAttak.update(delta);
+            indicatorStamina.update(delta);
+        }else if(state == State.PAUSE) {
+            return;
+        }
+        if (state == State.GAME_OVER){
+            newGameButton.update(delta);
         }
     }
 
