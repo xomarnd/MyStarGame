@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.mystargame.StarGame;
 
 public abstract class ScaledButton extends Sprite {
-
     private static final float PRESS_SCALE = 0.99f;
     protected StarGame game;
     protected BaseScreen screen;
@@ -36,6 +35,18 @@ public abstract class ScaledButton extends Sprite {
             return false;
         }
     }
+
+
+    public boolean touchUp(Vector2 touch, int pointer, int button) {
+        this.scale = 1f;
+        this.frame = 0;
+        if (isMe(touch) && pressed && this.pointer == pointer) {
+            action();
+            this.pressed = false;
+        }
+        return false;
+    }
+
     @Override
     public void update(float delta) {
         super.update(delta);
@@ -46,19 +57,6 @@ public abstract class ScaledButton extends Sprite {
         }
     }
 
-    public boolean touchUp(Vector2 touch, int pointer, int button) {
-
-        if (this.pointer != pointer || !pressed) {
-            pressed = false;
-            return false;
-        }
-        if (isMe(touch)) {
-            action();
-        }
-        pressed = false;
-        scale = 0f;
-        return false;
-    }
 
     public boolean isShowing() {
         return isShowing;
@@ -67,4 +65,5 @@ public abstract class ScaledButton extends Sprite {
         isShowing = showing;
     }
     public abstract void action();
+
 }

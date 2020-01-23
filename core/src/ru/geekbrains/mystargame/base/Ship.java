@@ -17,12 +17,15 @@ public class Ship extends Sprite {
     protected Vector2 v = new Vector2();
 
     protected BulletPool bulletPool;
+
+    protected BaseScreen screen;
+
     //принимаем границы игрового мира
     protected Rect worldBounds;
     //объявляем переменную региона
-    protected TextureRegion bulletRegion;
+    protected TextureRegion[] bulletRegion;
     protected ExplosionPool explosionPool;
-    protected TextureRegion bulletBigRegion;
+    protected TextureRegion[] bulletBigRegion;
     //Объявляем переменные атаки корабля игрока
     protected Sound shootSound;
     protected Sound sound;
@@ -30,6 +33,9 @@ public class Ship extends Sprite {
     protected float reloadInterval = 0.2f;
     //инициируем переменную таймера времени между выстрелами
     protected float reloadTimer = 0f;
+    protected int bulletFrame;
+    //объявляем переменную для значения константы жизни корабля
+    protected int constHp;
 
     protected float damageAnimateInterval = 0.1f;
     protected float damageAnimateTimer = damageAnimateInterval;
@@ -70,6 +76,10 @@ public class Ship extends Sprite {
     public void setHp(int hp) {
         this.hp = hp;
     }
+    public void medHp(int hp) {
+        this.hp += hp;
+    }
+
     public int getDamage() {
         return damage;
     }
@@ -81,6 +91,9 @@ public class Ship extends Sprite {
         if (damageAnimateTimer >= damageAnimateInterval) {
             frame = rndFrame(1, 3);
         }
+//        for (int i = 0; i <= 3; i++){
+//            bulletFrame = rndFrame(0, 3);
+//        }
     }
     @Override
     public void destroy() {
@@ -108,5 +121,9 @@ public class Ship extends Sprite {
     protected void boom() {
         Explosion explosion = explosionPool.obtain();
         explosion.set(getHeight(), this.pos);
+    }
+
+    public int getConstHp() {
+        return constHp;
     }
 }

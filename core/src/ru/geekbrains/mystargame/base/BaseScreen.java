@@ -30,16 +30,15 @@ public class BaseScreen implements Screen, InputProcessor {
     public void show() {
         Gdx.input.setInputProcessor(this);
         this.batch = new SpriteBatch();
-//
-//        System.out.println("show");
-//        batch = new SpriteBatch();
-//        screenBounds = new Rect();
-//        worldBounds = new Rect();
-//        glBounds = new Rect(0, 0, 1f, 1f);
-//        worldToGl = new Matrix4();
-//        screenToWorld = new Matrix3();
-//        touch = new Vector2();
-//        Gdx.input.setInputProcessor(this);
+        System.out.println("show");
+        batch = new SpriteBatch();
+        screenBounds = new Rect();
+        worldBounds = new Rect();
+        glBounds = new Rect(0, 0, 1f, 1f);
+        worldToGl = new Matrix4();
+        screenToWorld = new Matrix3();
+        touch = new Vector2();
+        Gdx.input.setInputProcessor(this);
     }
     public BaseScreen(StarGame game) {
         this.game = game;
@@ -170,10 +169,6 @@ public class BaseScreen implements Screen, InputProcessor {
     }
 
     public void startNewGame() {
-
-    }
-
-    public void dodge() {
 
     }
 }

@@ -21,14 +21,4 @@ public class ExplosionPool extends SpritesPool<Explosion> {
         return new Explosion(atlas, explosionSound);
     }
 
-    public void setExplosionEndFrame(int frame){
-        //если в коллекции активных взрывов есть объекты
-        if(!activeObjects.isEmpty()){
-            //пролистываем коллекцию
-            for (Explosion exp: activeObjects) {
-                //устанавливаем всем объектам взрывов кадр "последнего вздоха"
-                exp.setFrame(frame);
-            }
-        }
-    }
 }

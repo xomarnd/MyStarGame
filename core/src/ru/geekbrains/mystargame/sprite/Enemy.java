@@ -58,7 +58,7 @@ public class Enemy extends Ship {
     public void set(
             TextureRegion[] regions,
             Vector2 v0,
-            TextureRegion bulletRegion,
+            TextureRegion[] bulletRegion,
             float bulletHeight,
             float bulletVY,
             int damage,
@@ -74,7 +74,8 @@ public class Enemy extends Ship {
         this.damage = damage;
         this.reloadInterval = reloadInterval;
         setHeightProportion(height);
-        this.hp = hp;
+        this.constHp = hp;
+        this.hp = constHp;
         //устанавливаем скорость выплывания корабля противника пока не выплыл из-за экрана
         this.v.set(descentV);
         //устанавливаем состояние выплывания для корабля противника

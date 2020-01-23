@@ -19,12 +19,11 @@ public class ButtonAttak extends ScaledButton {
         super.resize(worldBounds);
         setHeightProportion(INITIAL_HEIGHT);
         setRight(worldBounds.getRight() - 0.05f);
-        setBottom(worldBounds.getBottom() + 0.05f);
+        setBottom(worldBounds.getBottom() + 0.12f);
     }
 
     @Override
     public void action() {
-        System.out.println("buttonAttack");
         MainShip.buttonAttack();
     }
 }

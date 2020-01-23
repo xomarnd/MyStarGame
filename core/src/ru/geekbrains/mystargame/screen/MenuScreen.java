@@ -11,6 +11,7 @@ import ru.geekbrains.mystargame.base.BaseScreen;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.sprite.ButtonExit;
 import ru.geekbrains.mystargame.sprite.ButtonPlay;
+import ru.geekbrains.mystargame.sprite.MainShip;
 import ru.geekbrains.mystargame.sprite.Star;
 
 public class MenuScreen extends BaseScreen {
@@ -32,9 +33,8 @@ public class MenuScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
-        atlas = new TextureAtlas(Gdx.files.internal("textures/menuAtlas.tpack"));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
-        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu2.tpack"));
+        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu4.tpack"));
 
         buttonExit = new ButtonExit(atlasMenu, this);
         buttonPlay = new ButtonPlay(atlasMenu, this);
@@ -92,9 +92,8 @@ public class MenuScreen extends BaseScreen {
     }
 
     private void draw() {
-        Gdx.gl.glClearColor(0.15f, 	0.15f, 0.15f, 1);
+        Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         for (Star star : stars) {
             star.draw(batch);

@@ -8,8 +8,6 @@ import ru.geekbrains.mystargame.base.BaseScreen;
 
 public class IndicatorStamina  extends Indicator {
 
-    public static Object setCount;
-
     public IndicatorStamina(TextureAtlas atlas, BaseScreen screen) {
         super(atlas.findRegion("ammo"), 4, 1, 4, screen);
     }
@@ -18,6 +16,6 @@ public class IndicatorStamina  extends Indicator {
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
         setHeightProportion(0.049f);
-        setBottom(worldBounds.getBottom() + 0.19f);
+        setBottom(worldBounds.getBottom() + 0.059f);
     }
 }

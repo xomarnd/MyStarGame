@@ -2,12 +2,15 @@ package ru.geekbrains.mystargame.sprite;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import ru.geekbrains.mystargame.base.Ship;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.pool.BulletPool;
 import ru.geekbrains.mystargame.pool.ExplosionPool;
+import ru.geekbrains.mystargame.utils.Regions;
+
 /**
  * Класс спрайта корабля игрока(главного корабля).
  */
@@ -27,15 +30,19 @@ public class MainShip extends Ship {
 
 
         this.explosionPool = explosionPool;
-        this.bulletRegion = atlas.findRegion("bulletMainShip");
-        this.bulletBigRegion = atlas.findRegion("bulletEnemy");
-        this.bulletHeight = 0.01f;
+
+        TextureRegion bulletMainShip = atlas.findRegion("bulletMainShip");
+        this.bulletRegion = Regions.split(bulletMainShip, 1, 4, 4);
+        TextureRegion bulletBigMainShip = atlas.findRegion("bulletBigMainShip");
+        this.bulletBigRegion = Regions.split(bulletBigMainShip, 1, 4, 4);
+
+        this.bulletHeight = 0.03f; //0.01f
         this.bulletV = new Vector2(0, 0.5f);
         this.damage = DAMAGE;
         this.superdamage = SUPERDAMAGE;
 
         this.v = new Vector2();
-        this.v0 = new Vector2(0.5f, 0);
+        this.v0 = new Vector2(0.9f, 0);
         this.reloadInterval = 0.25f;
         this.reloadTimer = 0f;
         this.hp = HP;
@@ -110,6 +117,10 @@ public class MainShip extends Ship {
 
     private void stop() {
         v.setZero();
+    }
+
+    public int getHP() {
+        return hp;
     }
 
     public void startNewGame(Rect worldBounds) {

@@ -8,19 +8,19 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 
 import java.util.List;
 
 import ru.geekbrains.mystargame.StarGame;
 import ru.geekbrains.mystargame.base.BaseScreen;
-import ru.geekbrains.mystargame.base.ScaledButton;
+import ru.geekbrains.mystargame.base.Font;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.pool.BulletPool;
 import ru.geekbrains.mystargame.pool.EnemyPool;
 import ru.geekbrains.mystargame.sprite.ButtonAttak;
 import ru.geekbrains.mystargame.sprite.ButtonDodge;
-import ru.geekbrains.mystargame.sprite.ButtonPlay;
 import ru.geekbrains.mystargame.sprite.ButtonSound;
 import ru.geekbrains.mystargame.sprite.IndicatorStamina;
 import ru.geekbrains.mystargame.sprite.MainShip;
@@ -36,10 +36,16 @@ import ru.geekbrains.mystargame.sprite.ButtonNewGame;
 
 
 public class GameScreen extends BaseScreen {
+    private static final float FONT_PADDING = 0.01f;
+    private static final float FONT_SIZE = 0.02f;
+
+    private static final String FRAGS = "Frags: ";
+    private static final String HP = "HP: ";
+    private static final String LEVEL = "Level: ";
 
     private enum State {PLAYING, PAUSE, GAME_OVER}
 
-    private TextureAtlas atlas;
+    private static float DISPLAYRED = 0.15f;
     private TextureAtlas atlasStar;
     private TextureAtlas atlasMenu;
 
@@ -71,11 +77,16 @@ public class GameScreen extends BaseScreen {
     //объявляем регион для картинки "новая игра"
     private ButtonNewGame newGameButton;
 
-
     private Star[] stars;
 
     private State state;
     private State preState;
+
+    private int frags;
+    private Font font;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHp;
+    private StringBuilder sbLevel;
 
     public GameScreen(StarGame game) {
         super(game);
@@ -84,6 +95,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void show() {
         super.show();
+        frags = 0;
         //Иинициация фоновой музыки
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
@@ -94,15 +106,18 @@ public class GameScreen extends BaseScreen {
         shellHitSound = Gdx.audio.newSound(Gdx.files.internal("sounds/shell-hit.mp3"));
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
 
-        atlas = new TextureAtlas(Gdx.files.internal("textures/mainAtlas.tpack"));
         atlasStar = new TextureAtlas(Gdx.files.internal("textures/stars.tpack"));
-        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu2.tpack"));
+        atlasMenu = new TextureAtlas(Gdx.files.internal("textures/atlasmenu4.tpack"));
 
         buttonDodge = new ButtonDodge(atlasMenu, this);
         buttonAttak = new ButtonAttak(atlasMenu, this);
         indicatorStamina = new IndicatorStamina(atlasMenu, this);
         buttonSound = new ButtonSound(atlasMenu, this);
-
+        //шрифты и информацию
+        font = new Font("font/font.fnt", "font/font.png");
+        sbFrags = new StringBuilder();
+        sbHp = new StringBuilder();
+        sbLevel = new StringBuilder();
         //инициируем "конец игры"
         gameOver = new GameOver(atlasMenu);
         //инициируем "новая игра"
@@ -110,7 +125,7 @@ public class GameScreen extends BaseScreen {
 
         //инициируем обьекты коробля
         bulletPool = new BulletPool();
-        explosionPool = new ExplosionPool(atlas, explosionSound);
+        explosionPool = new ExplosionPool(atlasMenu, explosionSound);
         mainShip = new MainShip(atlasMenu, bulletPool, explosionPool, laserSound);
         enemyPool = new EnemyPool(bulletPool, explosionPool, bulletSound, worldBounds);
         enemyGenerator = new EnemyGenerator(atlasMenu, enemyPool, worldBounds);
@@ -145,7 +160,7 @@ public class GameScreen extends BaseScreen {
         super.resize(worldBounds);
         newGameButton.resize(worldBounds);
 
-
+        font.setSize(FONT_SIZE);
         mainShip.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
@@ -157,7 +172,6 @@ public class GameScreen extends BaseScreen {
     @Override
     public void dispose() {
         mainShip.dispose();
-        atlas.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
         music.dispose();
@@ -176,27 +190,26 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
-        mainShip.touchDown(touch, pointer, button);
-
-        if(!buttonDodge.isMe(touch)){
-            mainShip.touchDown(touch, pointer, button);
-        }else {
-            buttonDodge.touchDown(touch, pointer, button);
-            buttonDodge.action();
-
-        }
-        if(!buttonAttak.isMe(touch)){
-            mainShip.touchDown(touch, pointer, button);
-        }else {
-            buttonAttak.touchDown(touch, pointer, button);
-            buttonAttak.action();
-        }
         if (state == State.PLAYING) {
-            mainShip.touchDown(touch, pointer, button);
+            if(buttonDodge.isMe(touch)){
+                buttonDodge.touchDown(touch, pointer, button);
+                buttonDodge.action();
+            }
+            if(buttonAttak.isMe(touch)){
+                buttonAttak.touchDown(touch, pointer, button);
+                buttonAttak.action();
+            }
         } else if (state == State.GAME_OVER) {
             newGameButton.touchDown(touch, pointer, button);
         }
-//        buttonSound.touchDown(touch, pointer, button);
+        if(buttonSound.isMe(touch)) {
+            buttonSound.touchDown(touch, pointer, button);
+            music.stop();
+            laserSound.stop();
+            bulletSound.stop();
+            shellHitSound.stop();
+            explosionSound.stop();
+        }
         return false;
     }
 
@@ -220,7 +233,7 @@ public class GameScreen extends BaseScreen {
         } else if (state == State.GAME_OVER) {
             newGameButton.touchUp(touch, pointer, button);
         }
-//        buttonSound.touchDown(touch, pointer, button);
+            buttonSound.touchDown(touch, pointer, button);
         return false;
     }
     @Override
@@ -261,6 +274,10 @@ public class GameScreen extends BaseScreen {
         return false;
     }
     public void startNewGame() {
+        //устанавливаем 1 лвл
+        enemyGenerator.setLevel(1);
+        //обнуляем фраги
+        frags = 0;
         //устанавливаем текущий режим игры в положение "играть"
         gameOver.startNewGame();
         //задаем начальные параметры главному кораблю
@@ -297,7 +314,7 @@ public class GameScreen extends BaseScreen {
             mainShip.update(delta);
             bulletPool.updateActiveSprites(delta);
             enemyPool.updateActiveSprites(delta);
-            enemyGenerator.generate(delta);
+            enemyGenerator.generate(delta, frags);
             buttonDodge.update(delta);
             buttonAttak.update(delta);
             indicatorStamina.update(delta);
@@ -311,7 +328,7 @@ public class GameScreen extends BaseScreen {
 
 
     private void draw() {
-        Gdx.gl.glClearColor(0.15f, 0.15f, 0.15f, 1);
+        Gdx.gl.glClearColor(DISPLAYRED, 0.15f, 0.15f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
@@ -324,7 +341,7 @@ public class GameScreen extends BaseScreen {
             explosionPool.drawActiveSprites(batch);
             bulletPool.drawActiveSprites(batch);
             enemyPool.drawActiveSprites(batch);
-
+            DISPLAYRED = 0.15f;
             mainShip.draw(batch);
 
             indicatorStamina.draw(batch);
@@ -332,9 +349,11 @@ public class GameScreen extends BaseScreen {
             buttonDodge.draw(batch);
             buttonAttak.draw(batch);
         } else if (state == State.GAME_OVER) {
+            DISPLAYRED = 0.8f;
             gameOver.draw(batch);
             newGameButton.draw(batch);
         }
+        printInfo();
         batch.end();
     }
 
@@ -343,11 +362,16 @@ public class GameScreen extends BaseScreen {
         if (state != State.PLAYING) {
             return;
         }
+        //инициируем временные коллекции для пулов кораблей противника и снарядов
         List<Enemy> enemyList = enemyPool.getActiveObjects();
         List<Bullet> bulletList = bulletPool.getActiveObjects();
+        //листаем коллекцию кораблей противника
         for (Enemy enemy : enemyList) {
+            //Считаем растояние между объектами
             float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
+            //отрабатываем столкновение кораблей
             if (mainShip.pos.dst(enemy.pos) < minDist) {
+                frags += enemy.getConstHp();
                 mainShip.damage(enemy.getDamage());
                 enemy.destroy();
                 if (mainShip.isDestroyed()) {
@@ -362,6 +386,10 @@ public class GameScreen extends BaseScreen {
                 if (enemy.isBulletCollision(bullet)) {
                     enemy.damage(bullet.getDamage());
                     bullet.destroy();
+                    if (enemy.isDestroyed()) {
+                        mainShip.medHp(enemyGenerator.getLevel());
+                        frags += enemy.getConstHp();
+                    }
                 }
             }
         }
@@ -378,5 +406,16 @@ public class GameScreen extends BaseScreen {
                 }
             }
         }
+    }
+    private void printInfo() {
+        sbFrags.setLength(0);
+        sbHp.setLength(0);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags),
+                worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
+        font.draw(batch, sbHp.append(HP).append(mainShip.getHP()),
+                worldBounds.pos.x, worldBounds.getTop() - FONT_PADDING, Align.center);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemyGenerator.getLevel()),
+                worldBounds.getRight() - FONT_PADDING, worldBounds.getTop() - FONT_PADDING, Align.right);
     }
 }

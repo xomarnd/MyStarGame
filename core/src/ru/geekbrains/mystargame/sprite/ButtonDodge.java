@@ -19,12 +19,11 @@ public class ButtonDodge  extends ScaledButton {
         super.resize(worldBounds);
         setHeightProportion(INITIAL_HEIGHT);
         setLeft(worldBounds.getLeft() + 0.05f);
-        setBottom(worldBounds.getBottom() + 0.05f);
+        setBottom(worldBounds.getBottom() + 0.12f);
     }
 
     @Override
     public void action() {
-        System.out.println("buttonDodge");
         MainShip.buttonDodge();
     }
 }
