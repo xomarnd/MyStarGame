@@ -1,6 +1,5 @@
 package ru.geekbrains.mystargame.screen;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -11,7 +10,6 @@ import ru.geekbrains.mystargame.base.BaseScreen;
 import ru.geekbrains.mystargame.math.Rect;
 import ru.geekbrains.mystargame.sprite.ButtonExit;
 import ru.geekbrains.mystargame.sprite.ButtonPlay;
-import ru.geekbrains.mystargame.sprite.MainShip;
 import ru.geekbrains.mystargame.sprite.Star;
 
 public class MenuScreen extends BaseScreen {

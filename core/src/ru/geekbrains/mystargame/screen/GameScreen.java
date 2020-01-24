@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Timer;
 
 
 import java.util.List;
@@ -38,10 +39,11 @@ import ru.geekbrains.mystargame.sprite.ButtonNewGame;
 public class GameScreen extends BaseScreen {
     private static final float FONT_PADDING = 0.01f;
     private static final float FONT_SIZE = 0.02f;
+    private static final float FONT_BIG_SIZE = 0.06f;
 
     private static final String FRAGS = "Frags: ";
     private static final String HP = "HP: ";
-    private static final String LEVEL = "Level: ";
+    private static final String LEVEL = "Lvl: ";
 
     private enum State {PLAYING, PAUSE, GAME_OVER}
 
@@ -84,9 +86,15 @@ public class GameScreen extends BaseScreen {
 
     private int frags;
     private Font font;
+    private Font fontBig;
     private StringBuilder sbFrags;
     private StringBuilder sbHp;
     private StringBuilder sbLevel;
+    private StringBuilder sbNewLevel;
+
+    private int maxLvL = 1;
+    private boolean flagLVL = false;
+
 
     public GameScreen(StarGame game) {
         super(game);
@@ -112,12 +120,15 @@ public class GameScreen extends BaseScreen {
         buttonDodge = new ButtonDodge(atlasMenu, this);
         buttonAttak = new ButtonAttak(atlasMenu, this);
         indicatorStamina = new IndicatorStamina(atlasMenu, this);
-        buttonSound = new ButtonSound(atlasMenu, this);
+        buttonSound = new ButtonSound(atlasMenu);
         //шрифты и информацию
         font = new Font("font/font.fnt", "font/font.png");
+        fontBig = new Font("font/font.fnt", "font/font.png");
         sbFrags = new StringBuilder();
         sbHp = new StringBuilder();
         sbLevel = new StringBuilder();
+        sbNewLevel = new StringBuilder();
+
         //инициируем "конец игры"
         gameOver = new GameOver(atlasMenu);
         //инициируем "новая игра"
@@ -134,10 +145,9 @@ public class GameScreen extends BaseScreen {
         for (int i = 0; i < stars.length; i++) {
             stars[i] = new Star(atlasStar);
         }
+
         state = State.PLAYING;
         preState = State.PLAYING;
-
-
     }
 
     @Override
@@ -151,7 +161,6 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void resize(Rect worldBounds) {
-
         indicatorStamina.resize(worldBounds);
         buttonSound.resize(worldBounds);
         buttonDodge.resize(worldBounds);
@@ -161,11 +170,13 @@ public class GameScreen extends BaseScreen {
         newGameButton.resize(worldBounds);
 
         font.setSize(FONT_SIZE);
+        fontBig.setSize(FONT_BIG_SIZE);
         mainShip.resize(worldBounds);
         for (Star star : stars) {
             star.resize(worldBounds);
         }
     }
+
     /**
      * Метод освобождения памяти от объектов.
      */
@@ -186,8 +197,6 @@ public class GameScreen extends BaseScreen {
         enemyPool.freeAllDestroyedActiveObjects();
     }
 
-
-
     @Override
     public boolean touchDown(Vector2 touch, int pointer, int button) {
         if (state == State.PLAYING) {
@@ -202,13 +211,18 @@ public class GameScreen extends BaseScreen {
         } else if (state == State.GAME_OVER) {
             newGameButton.touchDown(touch, pointer, button);
         }
+
+        System.out.println(buttonSound.getPress());
         if(buttonSound.isMe(touch)) {
-            buttonSound.touchDown(touch, pointer, button);
-            music.stop();
-            laserSound.stop();
-            bulletSound.stop();
-            shellHitSound.stop();
-            explosionSound.stop();
+            if (!buttonSound.getPress()) {
+                buttonSound.setPress(true);
+                buttonSound.setFrame(1);
+                music.pause();
+            }else {
+                buttonSound.setPress(false);
+                buttonSound.setFrame(0);
+                music.play();
+            }
         }
         return false;
     }
@@ -236,6 +250,7 @@ public class GameScreen extends BaseScreen {
             buttonSound.touchDown(touch, pointer, button);
         return false;
     }
+
     @Override
     public boolean keyDown(int keycode) {
         if (keycode == Input.Keys.ESCAPE) {
@@ -273,6 +288,7 @@ public class GameScreen extends BaseScreen {
     public boolean keyUp(int keycode) {
         return false;
     }
+
     public void startNewGame() {
         //устанавливаем 1 лвл
         enemyGenerator.setLevel(1);
@@ -297,6 +313,7 @@ public class GameScreen extends BaseScreen {
         //преостанавливаем воспроизведение музыки
         music.pause();
     }
+
     @Override
     public void resume() {
         //устанавливаем текущий режим игру на сохраненный предыдущий
@@ -306,6 +323,14 @@ public class GameScreen extends BaseScreen {
     }
 
     private void update(float delta) {
+        buttonSound.update(delta);
+        if(enemyGenerator.getLevel() > maxLvL && !flagLVL){
+            flagLVL = true;
+            mainShip.setDamage(1 + enemyGenerator.getLevel() / 4);
+            maxLvL = enemyGenerator.getLevel();
+            loadNewLvl();
+        }
+
         for (Star star : stars) {
             star.update(delta);
         }
@@ -325,7 +350,6 @@ public class GameScreen extends BaseScreen {
             newGameButton.update(delta);
         }
     }
-
 
     private void draw() {
         Gdx.gl.glClearColor(DISPLAYRED, 0.15f, 0.15f, 1);
@@ -352,6 +376,11 @@ public class GameScreen extends BaseScreen {
             DISPLAYRED = 0.8f;
             gameOver.draw(batch);
             newGameButton.draw(batch);
+        }
+        if (flagLVL){
+            DISPLAYRED = 0f;
+            fontBig.draw(batch, sbNewLevel.append(LEVEL).append(enemyGenerator.getLevel()),
+                    worldBounds.pos.x, 0 + FONT_PADDING, Align.center);
         }
         printInfo();
         batch.end();
@@ -387,7 +416,8 @@ public class GameScreen extends BaseScreen {
                     enemy.damage(bullet.getDamage());
                     bullet.destroy();
                     if (enemy.isDestroyed()) {
-                        mainShip.medHp(enemyGenerator.getLevel());
+                        //Хилим корабль игрока
+                        mainShip.medHp(1 + enemyGenerator.getLevel() / 4);
                         frags += enemy.getConstHp();
                     }
                 }
@@ -407,15 +437,26 @@ public class GameScreen extends BaseScreen {
             }
         }
     }
+
     private void printInfo() {
         sbFrags.setLength(0);
         sbHp.setLength(0);
         sbLevel.setLength(0);
+        sbNewLevel.setLength(0);
+
         font.draw(batch, sbFrags.append(FRAGS).append(frags),
                 worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
         font.draw(batch, sbHp.append(HP).append(mainShip.getHP()),
                 worldBounds.pos.x, worldBounds.getTop() - FONT_PADDING, Align.center);
         font.draw(batch, sbLevel.append(LEVEL).append(enemyGenerator.getLevel()),
                 worldBounds.getRight() - FONT_PADDING, worldBounds.getTop() - FONT_PADDING, Align.right);
+    }
+
+    public void loadNewLvl() {
+        Timer.schedule(new Timer.Task() {
+            public void run() {
+                flagLVL  = false;
+            }
+        }, 1);
     }
 }

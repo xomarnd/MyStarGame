@@ -16,7 +16,7 @@ import ru.geekbrains.mystargame.utils.Regions;
  */
 public class MainShip extends Ship {
     private static final int HP = 30;//30
-    private static final int DAMAGE = 1;
+    private int DAMAGE = 1;
     private static final int SUPERDAMAGE = 10;
 
     private static boolean moves = false;
@@ -37,6 +37,8 @@ public class MainShip extends Ship {
         this.bulletBigRegion = Regions.split(bulletBigMainShip, 1, 4, 4);
 
         this.bulletHeight = 0.03f; //0.01f
+        this.superBulletHeight = 0.06f; //0.01f
+
         this.bulletV = new Vector2(0, 0.5f);
         this.damage = DAMAGE;
         this.superdamage = SUPERDAMAGE;
@@ -77,8 +79,18 @@ public class MainShip extends Ship {
         if (moves) {
             if (vectorDodge) {
                 v.set(v0);
+                //ограничения движения коробля
+                if (getRight() > worldBounds.getRight()) {
+                    setRight(worldBounds.getRight());
+                    stop();
+                }
             } else {
                 v.set(v0).rotate(180);
+                //ограничения движения коробля
+                if (getLeft() < worldBounds.getLeft()) {
+                    setLeft(worldBounds.getLeft());
+                    stop();
+                }
             }
         }
         //автоатака
@@ -92,15 +104,6 @@ public class MainShip extends Ship {
             pointStaminaFull = false;
             setAttack = false;
         }
-        //ограничения движения коробля
-        if (getRight() > worldBounds.getRight()) {
-            setRight(worldBounds.getRight());
-            stop();
-        }
-        if (getLeft() < worldBounds.getLeft()) {
-            setLeft(worldBounds.getLeft());
-            stop();
-        }
     }
 
     public boolean isBulletCollision(Rect bullet) {
@@ -111,6 +114,7 @@ public class MainShip extends Ship {
                 || bullet.getTop() < getBottom()
         );
     }
+
     public void dispose() {
         sound.dispose();
     }
@@ -135,5 +139,4 @@ public class MainShip extends Ship {
         //сбрасываем флаг видимости главного корабля
         destroyed = false;
     }
-
 }

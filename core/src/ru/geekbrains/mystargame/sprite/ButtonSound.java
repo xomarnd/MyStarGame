@@ -2,16 +2,14 @@ package ru.geekbrains.mystargame.sprite;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-import ru.geekbrains.mystargame.base.ScaledButton;
+import ru.geekbrains.mystargame.base.PushButton;
 import ru.geekbrains.mystargame.math.Rect;
-import ru.geekbrains.mystargame.base.BaseScreen;
 
 
-public class ButtonSound extends ScaledButton {
+public class ButtonSound extends PushButton {
 
-    public ButtonSound(TextureAtlas atlas, BaseScreen screen) {
-        super(atlas.findRegion("soundoff"), 2, 1, 2, screen);
-        this.screen = screen;
+    public ButtonSound(TextureAtlas atlas) {
+        super(atlas.findRegion("soundoff"), 2, 1, 2, false);
     }
 
     @Override
@@ -24,6 +22,5 @@ public class ButtonSound extends ScaledButton {
 
     @Override
     public void action() {
-
     }
 }

@@ -13,7 +13,7 @@ public abstract class ScaledButton extends Sprite {
     private boolean pressed = false;
     private int pointer;
     private boolean isShowing;
-
+    private Vector2 touchIs;
 
     public ScaledButton(TextureRegion region, int rows, int cols, int frames, BaseScreen screen) {
         super(region, rows, cols, frames);
@@ -38,6 +38,7 @@ public abstract class ScaledButton extends Sprite {
 
 
     public boolean touchUp(Vector2 touch, int pointer, int button) {
+        touchIs = touch;
         this.scale = 1f;
         this.frame = 0;
         if (isMe(touch) && pressed && this.pointer == pointer) {
@@ -47,20 +48,6 @@ public abstract class ScaledButton extends Sprite {
         return false;
     }
 
-    @Override
-    public void update(float delta) {
-        super.update(delta);
-        if (!pressed) {
-            this.frame = 0;
-        } else {
-            this.frame = 1;
-        }
-    }
-
-
-    public boolean isShowing() {
-        return isShowing;
-    }
     public void setShowing(boolean showing) {
         isShowing = showing;
     }

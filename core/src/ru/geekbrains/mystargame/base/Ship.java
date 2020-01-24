@@ -1,7 +1,6 @@
 package ru.geekbrains.mystargame.base;
 
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import ru.geekbrains.mystargame.math.Rect;
@@ -9,6 +8,7 @@ import ru.geekbrains.mystargame.pool.BulletPool;
 import ru.geekbrains.mystargame.sprite.Bullet;
 import ru.geekbrains.mystargame.sprite.Explosion;
 import ru.geekbrains.mystargame.pool.ExplosionPool;
+import ru.geekbrains.mystargame.utils.EnemyGenerator;
 
 
 public class Ship extends Sprite {
@@ -42,6 +42,7 @@ public class Ship extends Sprite {
 
 
     protected float bulletHeight;
+    protected float superBulletHeight;
     protected int damage;
     protected int superdamage;
 
@@ -76,6 +77,10 @@ public class Ship extends Sprite {
     public void setHp(int hp) {
         this.hp = hp;
     }
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
     public void medHp(int hp) {
         this.hp += hp;
     }
@@ -91,9 +96,6 @@ public class Ship extends Sprite {
         if (damageAnimateTimer >= damageAnimateInterval) {
             frame = rndFrame(1, 3);
         }
-//        for (int i = 0; i <= 3; i++){
-//            bulletFrame = rndFrame(0, 3);
-//        }
     }
     @Override
     public void destroy() {
@@ -114,7 +116,7 @@ public class Ship extends Sprite {
 
     protected void bigShoot(){
         Bullet bullet = bulletPool.obtain();
-        bullet.set(this, bulletBigRegion, pos, bulletV, bulletHeight, worldBounds, superdamage);
+        bullet.set(this, bulletBigRegion, pos, bulletV, superBulletHeight, worldBounds, superdamage);
         shootSound.play();
     }
 

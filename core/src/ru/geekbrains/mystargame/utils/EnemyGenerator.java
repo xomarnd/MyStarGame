@@ -68,9 +68,9 @@ public class EnemyGenerator {
 
     public void generate(float delta, int frags) {
         //формулы расчета очки/лвл, уровня вражеских кораблей
-        level = frags / 15 + 1;
-        int enemyHp = 1 + (level / 3);
-        int enemyDamage = 1 + (level / 5);
+        level = frags / 20 + 1; // 15 + 1
+        int enemyHp = 1 + (level / 4);
+        int enemyDamage = 1 + (level / 6);
         generateTimer += delta;
         if (generateTimer > generateInterval) {
             generateTimer = 0f;
