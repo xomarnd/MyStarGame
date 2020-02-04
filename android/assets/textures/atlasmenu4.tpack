@@ -1,0 +1,124 @@
+
+atlasmenu4.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+ammo
+  rotate: false
+  xy: 2, 454
+  size: 1710, 584
+  orig: 1710, 584
+  offset: 0, 0
+  index: -1
+bulletBigMainShip
+  rotate: false
+  xy: 1833, 1014
+  size: 96, 24
+  orig: 96, 24
+  offset: 0, 0
+  index: -1
+bulletEnemy
+  rotate: false
+  xy: 1714, 657
+  size: 96, 24
+  orig: 96, 24
+  offset: 0, 0
+  index: -1
+bulletMainShip
+  rotate: false
+  xy: 1833, 988
+  size: 96, 24
+  orig: 96, 24
+  offset: 0, 0
+  index: -1
+enemy2
+  rotate: false
+  xy: 2, 168
+  size: 1623, 284
+  orig: 1623, 284
+  offset: 0, 0
+  index: -1
+exitbutton
+  rotate: false
+  xy: 1504, 16
+  size: 300, 150
+  orig: 300, 150
+  offset: 0, 0
+  index: -1
+explosion
+  rotate: false
+  xy: 2, 1040
+  size: 2000, 1000
+  orig: 2000, 1000
+  offset: 0, 0
+  index: -1
+newgame
+  rotate: false
+  xy: 2, 2
+  size: 1500, 164
+  orig: 1500, 164
+  offset: 0, 0
+  index: -1
+soundoff
+  rotate: false
+  xy: 1714, 683
+  size: 117, 355
+  orig: 117, 355
+  offset: 0, 0
+  index: -1
+
+atlasmenu42.png
+size: 2048,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+attakbutton
+  rotate: false
+  xy: 2, 2
+  size: 841, 188
+  orig: 841, 188
+  offset: 0, 0
+  index: -1
+dougbutton
+  rotate: false
+  xy: 2, 192
+  size: 841, 188
+  orig: 841, 188
+  offset: 0, 0
+  index: -1
+enemy0
+  rotate: false
+  xy: 845, 244
+  size: 713, 186
+  orig: 713, 186
+  offset: 0, 0
+  index: -1
+enemy1
+  rotate: false
+  xy: 767, 432
+  size: 713, 234
+  orig: 713, 234
+  offset: 0, 0
+  index: -1
+gameover
+  rotate: false
+  xy: 2, 668
+  size: 1294, 149
+  orig: 1294, 149
+  offset: 0, 0
+  index: -1
+main_ship
+  rotate: false
+  xy: 2, 382
+  size: 763, 284
+  orig: 763, 284
+  offset: 0, 0
+  index: -1
+startgame
+  rotate: false
+  xy: 2, 819
+  size: 1500, 164
+  orig: 1500, 164
+  offset: 0, 0
+  index: -1

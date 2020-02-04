@@ -1,0 +1,27 @@
+
+stars.png
+size: 128,32
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+stars0
+  rotate: false
+  xy: 2, 2
+  size: 27, 25
+  orig: 27, 25
+  offset: 0, 0
+  index: -1
+stars1
+  rotate: false
+  xy: 31, 2
+  size: 27, 25
+  orig: 27, 25
+  offset: 0, 0
+  index: -1
+stars2
+  rotate: false
+  xy: 60, 2
+  size: 27, 25
+  orig: 27, 25
+  offset: 0, 0
+  index: -1
